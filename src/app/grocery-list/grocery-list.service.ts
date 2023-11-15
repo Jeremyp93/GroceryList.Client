@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { Subject, from, lastValueFrom, map, switchMap } from "rxjs";
+import { Subject, lastValueFrom, map } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class GroceryListService {
