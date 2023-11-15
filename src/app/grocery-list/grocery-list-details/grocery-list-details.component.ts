@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
-import { GroceryList, GroceryListService, Ingredient } from '../grocery-list.service';
 import { Subscription, lastValueFrom } from 'rxjs';
+
+import { GroceryListService, Ingredient } from '../grocery-list.service';
 import { TileIngredientComponent } from './tile-ingredient/tile-ingredient.component';
 import { IngredientService } from './ingredient.service';
 
@@ -27,7 +28,8 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(async (params: Params) => {
       this.id = params['id'];
       const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.id));
-      this.ingredientService.setAndSortIngredientsByPriority(groceryList.ingredients, groceryList.store?.sections);
+      this.ingredientService.setSections(groceryList.store?.sections ?? []);
+      this.ingredientService.setAndSortIngredientsByPriority(groceryList.ingredients);
     });
     this.ingredientSubscription = this.ingredientService.ingredients$.subscribe(ingredients => this.ingredients = ingredients);
   }
@@ -38,6 +40,10 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
 
   putInBasket = (index: number) => {
     this.ingredientService.putInBasket(index);
+  }
+
+  resetIngredients = () => {
+    this.ingredientService.resetIngredients();
   }
 
   ngOnDestroy(): void {

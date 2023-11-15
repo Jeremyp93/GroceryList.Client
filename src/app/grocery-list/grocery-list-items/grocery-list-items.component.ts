@@ -22,7 +22,7 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.groceryListService.getAllGroceryLists();
-    this.sub = this.groceryListService.groceryListUpdated$.subscribe(lists => this.groceryLists = lists);
+    this.sub = this.groceryListService.groceryListUpdated$.subscribe(lists => this.groceryLists = this.sortByDate(lists));
   }
 
   getLinkMapsStore = (list: GroceryList): string | undefined => {
@@ -56,5 +56,9 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+  }
+
+  private sortByDate = (list: GroceryList[]): GroceryList[] => {
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 }

@@ -9,8 +9,13 @@ import { Ingredient, Section } from '../grocery-list.service';
 export class IngredientService {
     private ingredientsSubject = new BehaviorSubject<Ingredient[]>([]);
     ingredients$ = this.ingredientsSubject.asObservable();
+    private sections: Section[] = [];
 
     constructor() { }
+
+    setSections = (sections: Section[]) => {
+        this.sections = sections;
+    }
 
     getIngredients = (): Ingredient[] => {
         return this.ingredientsSubject.value;
@@ -20,12 +25,13 @@ export class IngredientService {
         this.ingredientsSubject.next(ingredients);
     }
 
-    /* moveToEnd = (index: number): void => {
+    resetIngredients = () => {
         const ingredients = this.getIngredients();
-        const movedIngredient = ingredients.splice(index, 1)[0];
-        ingredients.push(movedIngredient);
-        this.setIngredients([...ingredients]);
-    } */
+        const resettedIngredients = ingredients.map(i => {
+            return { ...i, inBasket: false }
+        });
+        this.setAndSortIngredientsByPriority(resettedIngredients);
+    }
 
     putInBasket = (index: number): void => {
         const ingredients = this.getIngredients();
@@ -35,20 +41,20 @@ export class IngredientService {
         this.setIngredients([...ingredients]);
     }
 
-    setAndSortIngredientsByPriority = (ingredients: Ingredient[], sections: Section[] | undefined): void => {
-        if (!sections) {
+    setAndSortIngredientsByPriority = (ingredients: Ingredient[]): void => {
+        if (this.sections.length == 0) {
             this.setIngredients([...ingredients]);
         }
         ingredients.sort((a, b) => {
-            const priorityA = this.getSectionPriority(a.category, sections!);
-            const priorityB = this.getSectionPriority(b.category, sections!);
+            const priorityA = this.getSectionPriority(a.category);
+            const priorityB = this.getSectionPriority(b.category);
             return priorityA - priorityB;
         });
         this.setIngredients([...ingredients]);
     }
 
-    private getSectionPriority = (category: string, sections: Section[]): number => {
-        const section = sections.find((s) => s.name === category);
+    private getSectionPriority = (category: string): number => {
+        const section = this.sections.find((s) => s.name === category);
         return section ? section.priority : 0;
     }
 }
