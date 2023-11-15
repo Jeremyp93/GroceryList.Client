@@ -1,0 +1,33 @@
+<h1>Grocery List</h1>
+@if(groceryLists.length > 0) {
+<ul>
+  @for (groceryList of groceryLists; track $index) {
+  <li class="tile" (click)="selectList(groceryList.id)">
+    <div class="title">
+      @if (groceryList.store) {
+      <label>{{ groceryList.store.name }}</label>
+      <label>{{ displayCreatedAt(groceryList.createdAt) }}</label>
+      }
+    </div>
+    <div class="content">
+      <div class="begin">
+        {{ groceryList.name }}
+      </div>
+      <div class="buttons">
+        @if(groceryList.store) {
+        <app-anchor-button
+          [href]="getLinkMapsStore(groceryList) || '#'"
+          [newWindow]="true"
+          text="Map"
+          (click)="preventPropagation($event)"
+        ></app-anchor-button>
+        }
+        <button>Delete</button>
+      </div>
+    </div>
+  </li>
+  }
+</ul>
+} @else {
+<p>No grocery list yet</p>
+}

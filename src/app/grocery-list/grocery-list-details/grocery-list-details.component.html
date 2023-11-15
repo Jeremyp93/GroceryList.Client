@@ -1,0 +1,23 @@
+@if(!error) {
+<ul>
+  <li>
+    <div class="title">
+      <button (click)="back()">BACK</button>
+      <h1>Ingredients to buy</h1>
+      <button (click)="back()">Edit</button>
+    </div>
+  </li>
+  @for(ingredient of ingredients; track $index) {
+  <li>
+    <app-tile-ingredient
+      [number]="ingredient.amount"
+      [text]="ingredient.name"
+      [done]="ingredient.inBasket"
+      (click)="putInBasket($index)"
+    ></app-tile-ingredient>
+  </li>
+  }
+</ul>
+} @else {
+<p>This item does not exist.. Please go back and select a correct list</p>
+}

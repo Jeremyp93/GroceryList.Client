@@ -1,0 +1,25 @@
+a {
+    display: inline-block;
+    padding: 10px 20px;
+    /* Adjust padding as needed */
+    font-size: 16px;
+    /* Adjust font size as needed */
+    text-align: center;
+    text-decoration: none;
+    background-color: #3498db;
+    /* Button background color */
+    color: #fff;
+    /* Button text color */
+    border-radius: 5px;
+    /* Rounded corners */
+    border: 1px solid #2980b9;
+    /* Button border color */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect */
+a:hover {
+    background-color: #2980b9;
+    /* Change background color on hover */
+}
