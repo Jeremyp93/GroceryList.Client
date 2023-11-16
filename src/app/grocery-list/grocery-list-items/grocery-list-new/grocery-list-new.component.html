@@ -1,1 +1,83 @@
-<p>grocery-list-new works!</p>
+<app-header title="Add Gorcery List" [backButton]="true"></app-header>
+<form
+  class="add-form"
+  [formGroup]="groceryListForm"
+  (ngSubmit)="onSubmit()"
+  autocomplete="off"
+>
+  <div class="group">
+    <label for="name">Name</label>
+    <input
+      type="text"
+      id="name"
+      placeholder="Name of the list"
+      formControlName="name"
+    />
+  </div>
+  <div class="group">
+    <label for="store">Store</label>
+    <select
+      name="store"
+      id="store"
+      formControlName="storeId"
+      (change)="onChangeStore($event)"
+    >
+      <option value="" selected>No store</option>
+      @for (store of storeService.storeUpdated$ | async; track $index) {
+      <option [value]="store.id">{{ store.name }}</option>
+      }
+    </select>
+  </div>
+  <div class="group" formArrayName="ingredients">
+    <div class="ingredient-title">
+      <label>Ingredients</label>
+      <app-button type="button" (click)="onAddIngredient()"
+        ><img
+          src="../../../../assets/icons/icons8-plus-24.png"
+          alt="add-icon"
+          width="20"
+      /></app-button>
+    </div>
+    @for (ingredientControl of ingredientControls; track
+    ingredientControl.value.id) {
+    <div class="ingredient-section" [formGroupName]="$index">
+      <div class="ingredient-amount">
+        <input type="number" formControlName="amount" placeholder="1" />
+      </div>
+      <div class="ingredient-name">
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="Name of ingredient"
+        />
+      </div>
+      <div class="ingredient-category">
+        <select name="category" id="category" formControlName="category">
+          <option value="" selected>No category</option>
+          @for (category of categories; track $index) {
+          <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </div>
+      <div class="ingredient-delete">
+        <app-button
+          [danger]="true"
+          (click)="onDeleteIngredient(ingredientControl.value.id)"
+          ><img
+            src="../../../assets/icons/icons8-delete-24.png"
+            alt="delete-icon"
+            width="20"
+          />
+        </app-button>
+      </div>
+    </div>
+    <hr />
+    }
+  </div>
+  <app-button type="submit"
+    ><img
+      src="../../../../assets/icons/icons8-check-24.png"
+      alt="submit-icon"
+      width="20"
+  /></app-button>
+</form>

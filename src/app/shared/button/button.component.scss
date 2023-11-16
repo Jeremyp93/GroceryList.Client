@@ -11,6 +11,10 @@ button {
     transition: background-color 0.3s ease;
     border: none;
     cursor: pointer;
+
+    &.danger {
+        background-color: #EB5E55;
+    }
 }
 
 /* Hover effect */

@@ -1,18 +1,36 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { style, transition, trigger, animate } from '@angular/animations';
 
 import { GroceryList, GroceryListService } from '../grocery-list.service';
 import { AnchorButtonComponent } from '../../shared/anchor-button/anchor-button.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { HeaderComponent } from '../../shared/header/header.component';
 
 @Component({
   selector: 'app-grocery-list-items',
   standalone: true,
-  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent],
+  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent],
   templateUrl: './grocery-list-items.component.html',
-  styleUrl: './grocery-list-items.component.scss'
+  styleUrl: './grocery-list-items.component.scss',
+  animations: [
+    trigger('deleteFadeSlideInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(20%)' }),
+        animate('300ms', style({ opacity: 1, transform: 'translateX(0)' })),
+      ]),
+      transition(':leave', [
+        animate('300ms', style({ opacity: 0, transform: 'translateX(20%)' })),
+      ]),
+    ]),
+    trigger('tileFadeSlideOut', [
+      transition(':leave', [
+        animate('300ms', style({ transform: 'translateX(100%)' })),
+      ]),
+    ])
+  ],
 })
 export class GroceryListItemsComponent implements OnInit, OnDestroy {
   groceryListService = inject(GroceryListService);
@@ -58,6 +76,24 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
   editList = (event: Event, id: string) => {
     this.preventPropagation(event);
     this.router.navigate(['grocery-list', id, 'edit']);
+  }
+
+  showDeleteList = (event: Event, id: string) => {
+    this.preventPropagation(event);
+    const groceryList = this.groceryLists.find(g => g.id === id);
+    groceryList!.showDelete = true;
+  }
+
+  deleteList = (event: Event, id: string) => {
+    this.preventPropagation(event);
+    const index = this.groceryLists.findIndex(g => g.id === id);
+    this.groceryLists.splice(index, 1);
+  }
+
+  cancelDeleteList = (event: Event, id: string) => {
+    this.preventPropagation(event);
+    const groceryList = this.groceryLists.find(g => g.id === id);
+    groceryList!.showDelete = false;
   }
 
   preventPropagation(event: Event): void {

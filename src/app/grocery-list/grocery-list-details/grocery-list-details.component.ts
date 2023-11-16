@@ -6,11 +6,12 @@ import { Subscription, lastValueFrom } from 'rxjs';
 import { GroceryListService, Ingredient } from '../grocery-list.service';
 import { TileIngredientComponent } from './tile-ingredient/tile-ingredient.component';
 import { IngredientService } from './ingredient.service';
+import { HeaderComponent } from '../../shared/header/header.component';
 
 @Component({
   selector: 'app-grocery-list-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, TileIngredientComponent],
+  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent],
   templateUrl: './grocery-list-details.component.html',
   styleUrl: './grocery-list-details.component.scss'
 })

@@ -1,0 +1,11 @@
+<div class="header">
+  @if(backButton) {
+  <app-button class="button" (click)="back()"
+    ><img
+      src="../../../assets/icons/icons8-back-24.png"
+      alt="back-icon"
+      width="20"
+  /></app-button>
+  }
+  <h1 [ngClass]="backButton ? 'with-button' : ''">{{ title }}</h1>
+</div>

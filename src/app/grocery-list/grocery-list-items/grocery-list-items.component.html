@@ -1,17 +1,39 @@
-<h1>Grocery List</h1>
-<div class="menu">
-  <app-button (click)="newList()">
-    <img
-      src="../../../assets/icons/icons8-plus-24.png"
-      alt="add-icon"
-      width="20"
-    />
-  </app-button>
+<div class="header">
+  <app-header title="Grocery List"></app-header>
+  <div class="menu">
+    <app-button (click)="newList()">
+      <img
+        src="../../../assets/icons/icons8-plus-24.png"
+        alt="add-icon"
+        width="20"
+      />
+    </app-button>
+  </div>
 </div>
 @if(groceryLists.length > 0) {
 <ul>
-  @for (groceryList of groceryLists; track $index) {
-  <li class="tile" (click)="selectList(groceryList.id)">
+  @for (groceryList of groceryLists; track groceryList.id) {
+  <li class="tile" (click)="selectList(groceryList.id)" @tileFadeSlideOut>
+    @if(groceryList.showDelete) {
+    <div class="delete-tile" @deleteFadeSlideInOut>
+      <div class="delete" (click)="deleteList($event, groceryList.id)">
+        <img
+          src="../../../assets/icons/icons8-delete-96.png"
+          alt="delete-icon"
+          width="50"
+          height="50"
+        />
+      </div>
+      <div class="cancel" (click)="cancelDeleteList($event, groceryList.id)">
+        <img
+          src="../../../assets/icons/icons8-cancel-96.png"
+          alt="cancel-icon"
+          width="40"
+          height="40"
+        />
+      </div>
+    </div>
+    }
     <div class="title">
       @if (groceryList.store) {
       <label>{{ groceryList.store.name }}</label>
@@ -38,6 +60,15 @@
           ><img
             src="../../../assets/icons/icons8-edit-24.png"
             alt="edit-icon"
+            width="20"
+          />
+        </app-button>
+        <app-button
+          [danger]="true"
+          (click)="showDeleteList($event, groceryList.id)"
+          ><img
+            src="../../../assets/icons/icons8-delete-24.png"
+            alt="delete-icon"
             width="20"
           />
         </app-button>

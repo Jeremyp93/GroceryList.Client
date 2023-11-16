@@ -1,4 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
 body {
     background-color: #F7F3F6;
+    text-align: center;
+}
+
+input[type="text"],
+input[type="number"] {
+    background-color: transparent;
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #C8963E;
+    outline: none;
+    color: #595959;
+    font-size: large;
+
+    &:focus {
+        //background-color: rgb(255, 255, 255, 0.8);
+        border: 1px solid #C8963E;
+        //padding: 5px;
+    }
+}
+
+select {
+    width: 100%;
+    //width: calc(100% - 20px);
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #C8963E;
+    background-color: transparent;
+    color: #595959;
+    cursor: pointer;
+    font-size: large;
+    //appearance: none;
+
+    &:focus {
+        outline: none;
+        border: 1px solid #C8963E;
+        //background-color: #fff;
+        //border-bottom: unset;
+    }
 }

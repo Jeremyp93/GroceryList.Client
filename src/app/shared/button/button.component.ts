@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,5 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './button.component.scss'
 })
 export class ButtonComponent {
-
+  @Input() danger: boolean = false;
+  @Input() type: string = 'button';
 }

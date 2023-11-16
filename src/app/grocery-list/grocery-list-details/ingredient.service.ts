@@ -1,7 +1,8 @@
 // ingredient.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Ingredient, Section } from '../grocery-list.service';
+import { Ingredient } from '../grocery-list.service';
+import { Section } from '../../stores/store.service';
 
 @Injectable({
     providedIn: 'root'
@@ -53,7 +54,7 @@ export class IngredientService {
         this.setIngredients([...ingredients]);
     }
 
-    private getSectionPriority = (category: string): number => {
+    private getSectionPriority = (category: string | null): number => {
         const section = this.sections.find((s) => s.name === category);
         return section ? section.priority : 0;
     }
