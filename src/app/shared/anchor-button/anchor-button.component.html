@@ -3,5 +3,5 @@
   [target]="newWindow ? '_blank' : '_self'"
   [class]="classes.join(' ')"
 >
-  {{ text }}
+  <ng-content></ng-content>
 </a>

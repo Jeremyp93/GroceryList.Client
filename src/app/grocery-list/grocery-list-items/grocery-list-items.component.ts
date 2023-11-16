@@ -5,11 +5,12 @@ import { Subscription } from 'rxjs';
 
 import { GroceryList, GroceryListService } from '../grocery-list.service';
 import { AnchorButtonComponent } from '../../shared/anchor-button/anchor-button.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-grocery-list-items',
   standalone: true,
-  imports: [CommonModule, AnchorButtonComponent, RouterModule],
+  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent],
   templateUrl: './grocery-list-items.component.html',
   styleUrl: './grocery-list-items.component.scss'
 })
@@ -48,6 +49,15 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
 
   selectList = (id: string) => {
     this.router.navigate(['grocery-list', id]);
+  }
+
+  newList = () => {
+    this.router.navigate(['grocery-list', 'new']);
+  }
+
+  editList = (event: Event, id: string) => {
+    this.preventPropagation(event);
+    this.router.navigate(['grocery-list', id, 'edit']);
   }
 
   preventPropagation(event: Event): void {

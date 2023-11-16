@@ -1,4 +1,13 @@
 <h1>Grocery List</h1>
+<div class="menu">
+  <app-button (click)="newList()">
+    <img
+      src="../../../assets/icons/icons8-plus-24.png"
+      alt="add-icon"
+      width="20"
+    />
+  </app-button>
+</div>
 @if(groceryLists.length > 0) {
 <ul>
   @for (groceryList of groceryLists; track $index) {
@@ -18,11 +27,20 @@
         <app-anchor-button
           [href]="getLinkMapsStore(groceryList) || '#'"
           [newWindow]="true"
-          text="Map"
           (click)="preventPropagation($event)"
-        ></app-anchor-button>
+          ><img
+            src="../../../assets/icons/icons8-location-24.png"
+            alt="location-icon"
+            width="20"
+        /></app-anchor-button>
         }
-        <button>Delete</button>
+        <app-button (click)="editList($event, groceryList.id)"
+          ><img
+            src="../../../assets/icons/icons8-edit-24.png"
+            alt="edit-icon"
+            width="20"
+          />
+        </app-button>
       </div>
     </div>
   </li>

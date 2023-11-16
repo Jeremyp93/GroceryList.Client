@@ -10,7 +10,6 @@ import { CommonModule } from '@angular/common';
 })
 export class AnchorButtonComponent {
   @Input() href: string = '';
-  @Input() text: string = '';
   @Input() newWindow: boolean = false;
   @Input() classes: string[] = [];
 }

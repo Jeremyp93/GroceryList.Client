@@ -1,23 +1,19 @@
-a {
+button {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 5px;
-    width: 20px;
-    height: 20px;
-    text-decoration: none;
+    width: 30px;
+    height: 30px;
     background-color: #C8963E;
     color: #fff;
     border-radius: 50%;
-    cursor: pointer;
     transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
 }
 
 /* Hover effect */
-a:hover {
+button:hover {
     background-color: #595959;
-
-    &* {
-        filter: invert(100%);
-    }
 }
