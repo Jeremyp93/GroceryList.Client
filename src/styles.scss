@@ -9,7 +9,7 @@ input[type="number"] {
     background-color: transparent;
     width: calc(100% - 20px);
     padding: 10px;
-    border: none;
+    border: 1px solid transparent;
     border-bottom: 1px solid #C8963E;
     outline: none;
     color: #595959;
@@ -26,7 +26,7 @@ select {
     width: 100%;
     //width: calc(100% - 20px);
     padding: 10px;
-    border: none;
+    border: 1px solid transparent;
     border-bottom: 1px solid #C8963E;
     background-color: transparent;
     color: #595959;

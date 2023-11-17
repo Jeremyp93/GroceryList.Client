@@ -1,20 +1,57 @@
-<app-header title="Ingredients to buy" [backButton]="true"></app-header>
+<div class="header">
+  <app-header title="Items" [backButton]="true"></app-header>
+  <h3>{{ title }}</h3>
+  <div class="menu">
+    <app-button (click)="newIngredient()">
+      <img
+        src="../../../assets/icons/icons8-plus-24.png"
+        alt="add-icon"
+        width="20"
+      />
+    </app-button>
+    <app-button (click)="editIngredient()">
+      <img
+        src="../../../assets/icons/icons8-edit-24.png"
+        alt="edit-icon"
+        width="20"
+      />
+    </app-button>
+    <app-button
+      (click)="saveIngredients()"
+      [success]="saved"
+      [disabled]="saved"
+      [loading]="isLoading"
+    >
+      @if (saved) {
+      <img
+        src="../../../../assets/icons/icons8-check-24.png"
+        alt="submit-icon"
+        width="20"
+      />
+      } @else {
+      <img
+        src="../../../assets/icons/icons8-save-24.png"
+        alt="save-icon"
+        width="20"
+      />
+      }
+    </app-button>
+    <app-button (click)="resetIngredients()">
+      <img
+        src="../../../assets/icons/icons8-reset-24.png"
+        alt="reset-icon"
+        width="20"
+      />
+    </app-button>
+  </div>
+</div>
 @if(!error) {
 <ul>
-  <li>
-    <div class="title">
-      <!-- <button (click)="back()">BACK</button>
-      <h1>Ingredients to buy</h1> -->
-      <button (click)="resetIngredients()">Reset</button>
-    </div>
-  </li>
-  @for(ingredient of ingredients; track $index) {
-  <li>
+  @for(ingredient of ingredients; track ingredient.id) {
+  <li (click)="putInBasket($index)" @tileFadeSlideOut>
     <app-tile-ingredient
-      [number]="ingredient.amount"
-      [text]="ingredient.name"
-      [done]="ingredient.inBasket"
-      (click)="putInBasket($index)"
+      [ingredient]="ingredient"
+      (onIngredientDeleted)="deleteIngredient($event)"
     ></app-tile-ingredient>
   </li>
   }

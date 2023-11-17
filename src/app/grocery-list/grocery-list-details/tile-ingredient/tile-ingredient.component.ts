@@ -1,15 +1,21 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ButtonComponent } from '../../../shared/button/button.component';
+import { Ingredient } from '../../grocery-list.service';
 
 @Component({
   selector: 'app-tile-ingredient',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonComponent],
   templateUrl: './tile-ingredient.component.html',
   styleUrl: './tile-ingredient.component.scss'
 })
 export class TileIngredientComponent {
-  @Input() number: number = 0;
-  @Input() text: string = '';
-  @Input() done: boolean = false;
+  @Input() ingredient: Ingredient | null = null
+  @Output() onIngredientDeleted: EventEmitter<string> = new EventEmitter<string>();
+
+  showDeleteList = (event: Event) => {
+    event.stopImmediatePropagation();
+    this.onIngredientDeleted.emit(this.ingredient!.id);
+  }
 }

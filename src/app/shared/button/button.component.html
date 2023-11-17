@@ -1,3 +1,10 @@
-<button [class.danger]="danger" [type]="type">
+<button
+  [class.danger]="danger"
+  [class.success]="success"
+  [type]="type"
+  [disabled]="disabled"
+>
+  @if(loading) { <app-loading size="10px" /> } @else {
   <ng-content></ng-content>
+  }
 </button>

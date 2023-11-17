@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GroceryListEditComponent } from './grocery-list-edit.component';
+import { LoadingComponent } from './loading.component';
 
-describe('GroceryListEditComponent', () => {
-  let component: GroceryListEditComponent;
-  let fixture: ComponentFixture<GroceryListEditComponent>;
+describe('LoadingComponent', () => {
+  let component: LoadingComponent;
+  let fixture: ComponentFixture<LoadingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GroceryListEditComponent]
+      imports: [LoadingComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(GroceryListEditComponent);
+    fixture = TestBed.createComponent(LoadingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

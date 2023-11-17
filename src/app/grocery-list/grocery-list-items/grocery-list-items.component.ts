@@ -86,8 +86,9 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
 
   deleteList = (event: Event, id: string) => {
     this.preventPropagation(event);
-    const index = this.groceryLists.findIndex(g => g.id === id);
-    this.groceryLists.splice(index, 1);
+    this.groceryListService.deleteGroceryList(id);
+    /* const index = this.groceryLists.findIndex(g => g.id === id);
+    this.groceryLists.splice(index, 1); */
   }
 
   cancelDeleteList = (event: Event, id: string) => {

@@ -1,4 +1,5 @@
 <app-header title="Add Gorcery List" [backButton]="true"></app-header>
+@if (groceryListForm) {
 <form
   class="add-form"
   [formGroup]="groceryListForm"
@@ -13,6 +14,9 @@
       placeholder="Name of the list"
       formControlName="name"
     />
+    @if(this.groceryListForm.controls["name"].invalid && submitted) {
+    <span class="error">Name is required</span>
+    }
   </div>
   <div class="group">
     <label for="store">Store</label>
@@ -30,7 +34,7 @@
   </div>
   <div class="group" formArrayName="ingredients">
     <div class="ingredient-title">
-      <label>Ingredients</label>
+      <label>Items</label>
       <app-button type="button" (click)="onAddIngredient()"
         ><img
           src="../../../../assets/icons/icons8-plus-24.png"
@@ -43,16 +47,31 @@
     <div class="ingredient-section" [formGroupName]="$index">
       <div class="ingredient-amount">
         <input type="number" formControlName="amount" placeholder="1" />
+        @if(ingredientControl.get("amount")?.invalid &&
+        ingredientControl.get("amount")?.touched) {
+        <span class="error">Amount is required</span>
+        }
       </div>
       <div class="ingredient-name">
         <input
+          #inputFields
+          [id]="'name_' + ingredientControl.value.id"
           type="text"
           formControlName="name"
           placeholder="Name of ingredient"
+          (keydown.enter)="onEnterPressed($event)"
         />
+        @if(ingredientControl.get("name")?.invalid && submitted) {
+        <span class="error">Name is required</span>
+        }
       </div>
       <div class="ingredient-category">
-        <select name="category" id="category" formControlName="category">
+        <select
+          name="category"
+          id="category"
+          formControlName="category"
+          (keydown.enter)="onEnterPressed($event)"
+        >
           <option value="" selected>No category</option>
           @for (category of categories; track $index) {
           <option [value]="category">{{ category }}</option>
@@ -81,3 +100,6 @@
       width="20"
   /></app-button>
 </form>
+} @else {
+<p>Loading...</p>
+}

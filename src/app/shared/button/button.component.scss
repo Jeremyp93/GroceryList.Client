@@ -15,9 +15,16 @@ button {
     &.danger {
         background-color: #EB5E55;
     }
-}
 
-/* Hover effect */
-button:hover {
-    background-color: #595959;
+    &.success {
+        background-color: #91C499;
+    }
+
+    &:hover {
+        background-color: #595959;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
 }

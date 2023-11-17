@@ -1,13 +1,14 @@
 // ingredient.service.ts
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Ingredient } from '../grocery-list.service';
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
+import { GroceryListService, Ingredient } from '../grocery-list.service';
 import { Section } from '../../stores/store.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class IngredientService {
+    groceryListService = inject(GroceryListService);
     private ingredientsSubject = new BehaviorSubject<Ingredient[]>([]);
     ingredients$ = this.ingredientsSubject.asObservable();
     private sections: Section[] = [];
@@ -26,19 +27,26 @@ export class IngredientService {
         this.ingredientsSubject.next(ingredients);
     }
 
+    deleteIngredient = (id: string) => {
+        const ingredients = [...this.getIngredients()];
+        const index = ingredients.findIndex(i => i.id === id);
+        ingredients.splice(index, 1);
+        this.ingredientsSubject.next(ingredients);
+    }
+
     resetIngredients = () => {
         const ingredients = this.getIngredients();
         const resettedIngredients = ingredients.map(i => {
-            return { ...i, inBasket: false }
+            return { ...i, selected: false }
         });
         this.setAndSortIngredientsByPriority(resettedIngredients);
     }
 
     putInBasket = (index: number): void => {
         const ingredients = this.getIngredients();
-        if (ingredients[index].inBasket) return;
+        if (ingredients[index].selected) return;
         const movedIngredient = ingredients.splice(index, 1)[0];
-        ingredients.push({ ...movedIngredient, inBasket: true });
+        ingredients.push({ ...movedIngredient, selected: true });
         this.setIngredients([...ingredients]);
     }
 
@@ -49,9 +57,20 @@ export class IngredientService {
         ingredients.sort((a, b) => {
             const priorityA = this.getSectionPriority(a.category);
             const priorityB = this.getSectionPriority(b.category);
+            if (priorityA === 0 && priorityB === 0) {
+                return 0; // Maintain original order for both null categories
+            } else if (priorityA === 0) {
+                return 1; // Place items with null category at the end
+            } else if (priorityB === 0) {
+                return -1; // Place items with null category at the end
+            }
             return priorityA - priorityB;
         });
         this.setIngredients([...ingredients]);
+    }
+
+    saveIngredients = async (groceryListId: string) => {
+        const newIngredients = await lastValueFrom(this.groceryListService.updateIngredients(groceryListId, [...this.getIngredients()]));
     }
 
     private getSectionPriority = (category: string | null): number => {
