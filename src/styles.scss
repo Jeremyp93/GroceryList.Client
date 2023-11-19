@@ -2,6 +2,10 @@
 body {
     background-color: #F7F3F6;
     text-align: center;
+
+    &.modal-open {
+        overflow: hidden;
+    }
 }
 
 input[type="text"],
@@ -41,3 +45,36 @@ select {
         //border-bottom: unset;
     }
 }
+
+/* .form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 20px 10px;
+    box-shadow: 1px 1px 10px 0 rgba(0, 0, 0, .1);
+
+    .group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+
+        span {
+            color: #EB5E55;
+            font-size: small;
+            margin-top: 5px;
+            ;
+        }
+
+        label {
+            font-size: large;
+            font-weight: bold;
+            color: #595959;
+        }
+
+        &:not(:last-child) {
+            margin-bottom: 20px;
+        }
+    }
+} */

@@ -66,7 +66,6 @@ export class GroceryListNewComponent implements OnInit {
   onSubmit = async () => {
     this.submitted = true;
     if (this.groceryListForm.invalid) return;
-    console.log(this.groceryListForm);
     if (this.editMode) {
       if (!this.groceryListForm.pristine) {
         await this.groceryListService.updateGroceryList(this.idToEdit!, this.groceryListForm.value);

@@ -165,3 +165,35 @@ ul {
         }
     }
 }
+
+.form-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 0 10px 20px 10px;
+
+    .group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+
+        span {
+            color: #EB5E55;
+            font-size: small;
+            margin-top: 5px;
+            ;
+        }
+
+        label {
+            font-size: large;
+            font-weight: bold;
+            color: #595959;
+        }
+
+        &:not(:last-child) {
+            margin-bottom: 20px;
+        }
+    }
+}

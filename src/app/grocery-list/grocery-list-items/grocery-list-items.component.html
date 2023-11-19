@@ -1,3 +1,27 @@
+<app-modal [isOpen]="modalOpen" (closeModalEvent)="modalOpen = false"
+  ><div>
+    <h4>Copy</h4>
+    <form
+      class="form-modal"
+      [formGroup]="duplicateForm"
+      (ngSubmit)="onSubmitDuplicateForm()"
+    >
+      <div class="group">
+        <input type="text" placeholder="Name" formControlName="name" />
+        @if(this.duplicateForm.controls["name"].invalid &&
+        duplicateFormSubmitted) {
+        <span class="error">Name is required</span>
+        }
+      </div>
+      <app-button type="submit" [loading]="isLoading"
+        ><img
+          src="../../../../assets/icons/icons8-check-24.png"
+          alt="submit-icon"
+          width="20"
+      /></app-button>
+    </form>
+  </div>
+</app-modal>
 <div class="header">
   <app-header title="Grocery List"></app-header>
   <div class="menu">
@@ -69,6 +93,13 @@
           ><img
             src="../../../assets/icons/icons8-delete-24.png"
             alt="delete-icon"
+            width="20"
+          />
+        </app-button>
+        <app-button (click)="openModal($event, groceryList)"
+          ><img
+            src="../../../assets/icons/icons8-duplicate-24.png"
+            alt="duplicate-icon"
             width="20"
           />
         </app-button>

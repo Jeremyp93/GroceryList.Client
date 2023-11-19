@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { style, transition, trigger, animate } from '@angular/animations';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { GroceryList, GroceryListService } from '../grocery-list.service';
 import { AnchorButtonComponent } from '../../shared/anchor-button/anchor-button.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { HeaderComponent } from '../../shared/header/header.component';
+import { ModalComponent } from '../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-grocery-list-items',
   standalone: true,
-  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent],
+  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent, ModalComponent, ReactiveFormsModule],
   templateUrl: './grocery-list-items.component.html',
   styleUrl: './grocery-list-items.component.scss',
   animations: [
@@ -37,11 +39,17 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
   router = inject(Router);
   route = inject(ActivatedRoute);
   groceryLists: GroceryList[] = [];
+  modalOpen: boolean = false;
+  duplicateForm!: FormGroup;
+  duplicateFormSubmitted = false;
+  isLoading: boolean = false;
+  private selectedList: GroceryList | null = null;
   private sub!: Subscription;
 
   ngOnInit(): void {
     this.groceryListService.getAllGroceryLists();
     this.sub = this.groceryListService.groceryListUpdated$.subscribe(lists => this.groceryLists = this.sortByDate(lists));
+    this.initForm();
   }
 
   getLinkMapsStore = (list: GroceryList): string | undefined => {
@@ -87,8 +95,6 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
   deleteList = (event: Event, id: string) => {
     this.preventPropagation(event);
     this.groceryListService.deleteGroceryList(id);
-    /* const index = this.groceryLists.findIndex(g => g.id === id);
-    this.groceryLists.splice(index, 1); */
   }
 
   cancelDeleteList = (event: Event, id: string) => {
@@ -97,8 +103,27 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
     groceryList!.showDelete = false;
   }
 
+  openModal = (event: Event, list: GroceryList): void => {
+    this.preventPropagation(event);
+    this.selectedList = list;
+    this.modalOpen = true;
+  }
+
   preventPropagation(event: Event): void {
     event.stopPropagation();
+  }
+
+  onSubmitDuplicateForm = async () => {
+    this.duplicateFormSubmitted = true;
+    if (this.duplicateForm.invalid) return;
+    if (!this.selectedList) return;
+    this.isLoading = true;
+    const name = this.duplicateForm.get('name')?.value;
+    const list = { ...this.selectedList, name: name };
+    await this.groceryListService.addGroceryList(list);
+    this.duplicateForm.reset();
+    this.selectedList = null;
+    this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
   }
 
   ngOnDestroy(): void {
@@ -107,5 +132,11 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
 
   private sortByDate = (list: GroceryList[]): GroceryList[] => {
     return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  private initForm = () => {
+    this.duplicateForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+    });
   }
 }
