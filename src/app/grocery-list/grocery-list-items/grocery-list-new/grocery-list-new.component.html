@@ -42,7 +42,9 @@
           width="20"
       /></app-button>
     </div>
-    @for (ingredientControl of ingredientControls; track
+    @if(ingredientControls.length === 0) {
+    <p>No items added yet.</p>
+    } @else { @for (ingredientControl of ingredientControls; track
     ingredientControl.value.id) {
     <div class="ingredient-section" [formGroupName]="$index">
       <div class="ingredient-amount">
@@ -91,7 +93,7 @@
       </div>
     </div>
     <hr />
-    }
+    } }
   </div>
   <app-button type="submit"
     ><img

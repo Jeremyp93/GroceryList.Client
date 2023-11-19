@@ -2,9 +2,9 @@
   [class.danger]="danger"
   [class.success]="success"
   [type]="type"
-  [disabled]="disabled"
+  [disabled]="disabled || loading"
 >
-  @if(loading) { <app-loading size="10px" /> } @else {
+  @if(loading) { <app-loading size="15px" /> } @else {
   <ng-content></ng-content>
   }
 </button>

@@ -9,9 +9,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './loading.component.scss'
 })
 export class LoadingComponent {
-  @Input() size: string = '80px'; // Default size
+  @Input() size: string = '50px'; // Default size
 
   getSpinnerSize() {
-    return { width: this.size, height: this.size, fontSize: this.size };
+    return { width: this.size, height: this.size };
   }
 }

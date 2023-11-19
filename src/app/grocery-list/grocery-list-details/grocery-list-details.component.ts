@@ -9,11 +9,12 @@ import { IngredientService } from './ingredient.service';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
   selector: 'app-grocery-list-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent, ButtonComponent],
+  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent, ButtonComponent, LoadingComponent],
   templateUrl: './grocery-list-details.component.html',
   styleUrl: './grocery-list-details.component.scss',
   animations: [
@@ -74,14 +75,12 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
 
   saveIngredients = async () => {
     this.isLoading = true;
-    setTimeout(async () => {
-      await this.ingredientService.saveIngredients(this.id);
-      this.isLoading = false;
-      this.saved = true;
-      setTimeout(() => {
-        this.saved = false;
-      }, 1000);
-    }, 2000);
+    await this.ingredientService.saveIngredients(this.id);
+    this.isLoading = false;
+    this.saved = true;
+    setTimeout(() => {
+      this.saved = false;
+    }, 1000);
   }
 
   ngOnDestroy(): void {
