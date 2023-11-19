@@ -87,19 +87,19 @@
             width="20"
           />
         </app-button>
+        <app-button (click)="openModal($event, groceryList)"
+          ><img
+            src="../../../assets/icons/icons8-duplicate-24.png"
+            alt="duplicate-icon"
+            width="20"
+          />
+        </app-button>
         <app-button
           [danger]="true"
           (click)="showDeleteList($event, groceryList.id)"
           ><img
             src="../../../assets/icons/icons8-delete-24.png"
             alt="delete-icon"
-            width="20"
-          />
-        </app-button>
-        <app-button (click)="openModal($event, groceryList)"
-          ><img
-            src="../../../assets/icons/icons8-duplicate-24.png"
-            alt="duplicate-icon"
             width="20"
           />
         </app-button>
