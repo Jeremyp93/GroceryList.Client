@@ -6,6 +6,10 @@
     height: 66px;
     background-color: white;
 
+    &.keyboard-open {
+        position: initial;
+    }
+
     ul {
         list-style-type: none;
         display: flex;
@@ -40,6 +44,10 @@
     width: 50%;
     margin: 0 auto;
     padding-bottom: 60px;
+
+    &.keyboard-open {
+        padding-bottom: 10px;
+    }
 
     @media screen and (max-width: 768px) {
         width: 90%;

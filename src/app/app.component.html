@@ -1,7 +1,7 @@
-<div class="container">
+<div class="container" [class.keyboard-open]="isKeyboardOpen">
   <router-outlet></router-outlet>
 </div>
-<div class="bottom-menu">
+<div class="bottom-menu" [class.keyboard-open]="isKeyboardOpen">
   <ul>
     <li routerLinkActive="active">
       <a routerLink="/grocery-lists"
