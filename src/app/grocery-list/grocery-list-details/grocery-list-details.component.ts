@@ -133,7 +133,6 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   }
 
   initForm = () => {
-    console.log(this.storeId);
     this.exportForm = new FormGroup({
       name: new FormControl('', Validators.required),
       storeId: new FormControl(this.storeId ?? '')

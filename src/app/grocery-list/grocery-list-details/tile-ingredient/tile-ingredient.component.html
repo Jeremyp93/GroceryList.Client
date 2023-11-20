@@ -5,6 +5,7 @@
   </div>
   <div class="text">
     {{ ingredient.name }}
+    <span>{{ ingredient.category }}</span>
   </div>
   <div>
     <app-button [danger]="true" (click)="showDeleteList($event)"
