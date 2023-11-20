@@ -12,11 +12,13 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 import { TileAddIngredientComponent } from './tile-add-ingredient/tile-add-ingredient.component';
+import { ModalComponent } from '../../shared/modal/modal.component';
+import { StoreService } from '../../stores/store.service';
 
 @Component({
   selector: 'app-grocery-list-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent, ButtonComponent, LoadingComponent, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent, ButtonComponent, LoadingComponent, ReactiveFormsModule, ModalComponent],
   templateUrl: './grocery-list-details.component.html',
   styleUrl: './grocery-list-details.component.scss',
   animations: [
@@ -31,6 +33,7 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) dynamicComponentContainer!: ViewContainerRef;
   route = inject(ActivatedRoute);
   router = inject(Router);
+  storeService = inject(StoreService);
   groceryListService = inject(GroceryListService);
   ingredientService = inject(IngredientService);
   ingredientSubscription!: Subscription;
@@ -42,15 +45,21 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   itemAddedSubscription: Subscription | null = null;
   addFormClosedSubscription: Subscription | null = null;
+  modalOpen: boolean = false;
+  exportForm!: FormGroup;
+  exportFormSubmitted: boolean = false;
+  storeId: string | null = null;
 
   ngOnInit(): void {
     this.ingredientSubscription = this.ingredientService.ingredients$.subscribe(ingredients => this.ingredients = ingredients);
     this.route.params.subscribe(async (params: Params) => {
       this.id = params['id'];
       const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.id));
+      this.storeId = groceryList.storeId;
       this.title = groceryList.name;
       this.ingredientService.setSections(groceryList.store?.sections ?? []);
       this.ingredientService.setAndSortIngredientsByPriority(groceryList.ingredients);
+      this.initForm();
     });
   }
 
@@ -98,6 +107,37 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.saved = false;
     }, 1000);
+  }
+
+  exportToNewList = async (event: Event) => {
+    event.stopPropagation();
+    await this.storeService.getAllStores();
+    this.modalOpen = true;
+  }
+
+  onSubmitExportForm = async () => {
+    const name = this.exportForm.value.name;
+    const storeId = this.exportForm.value.storeId;
+    this.exportFormSubmitted = true;
+    if (this.exportForm.invalid) return;
+    const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.id));
+    const newList = { ...groceryList, name: name, storeId: storeId, ingredients: [...this.ingredientService.getIngredients().filter(i => !i.selected)] };
+    await this.groceryListService.addGroceryList(newList);
+    this.exportForm.reset();
+    this.exportFormSubmitted = false;
+    this.back();
+  }
+
+  getCategories = (): string[] => {
+    return this.ingredientService.getSections().map(s => s.name);
+  }
+
+  initForm = () => {
+    console.log(this.storeId);
+    this.exportForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      storeId: new FormControl(this.storeId ?? '')
+    });
   }
 
   ngOnDestroy(): void {

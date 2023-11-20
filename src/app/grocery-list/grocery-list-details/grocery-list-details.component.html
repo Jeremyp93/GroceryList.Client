@@ -43,6 +43,13 @@
         width="20"
       />
     </app-button>
+    <app-button (click)="exportToNewList($event)">
+      <img
+        src="../../../assets/icons/icons8-export-24.png"
+        alt="export-icon"
+        width="20"
+      />
+    </app-button>
   </div>
 </div>
 @if(!error) {
@@ -60,3 +67,38 @@
 } @else {
 <p>This item does not exist.. Please go back and select a correct list</p>
 }
+<app-modal [isOpen]="modalOpen" (closeModalEvent)="modalOpen = false"
+  ><div class="content-modal">
+    <h4>Export items to new list</h4>
+    <span>Only unselected items will be transferred</span>
+    @if (exportForm) {
+    <form
+      class="form-modal"
+      [formGroup]="exportForm"
+      (ngSubmit)="onSubmitExportForm()"
+    >
+      <div class="group">
+        <input type="text" placeholder="Name" formControlName="name" />
+        @if(this.exportForm.controls["name"].invalid && exportFormSubmitted) {
+        <span class="error">Name is required</span>
+        }
+      </div>
+      <div class="group">
+        <label for="store">Store</label>
+        <select name="store" id="store" formControlName="storeId">
+          <option value="" selected>No store</option>
+          @for (store of storeService.storeUpdated$ | async; track $index) {
+          <option [value]="store.id">{{ store.name }}</option>
+          }
+        </select>
+      </div>
+      <app-button type="submit" [loading]="isLoading"
+        ><img
+          src="../../../../assets/icons/icons8-check-24.png"
+          alt="submit-icon"
+          width="20"
+      /></app-button>
+    </form>
+    }
+  </div></app-modal
+>

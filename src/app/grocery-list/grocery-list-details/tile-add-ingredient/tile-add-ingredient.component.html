@@ -1,5 +1,5 @@
 <div class="tile-add-container">
-  <form [formGroup]="addForm">
+  <form [formGroup]="addForm" class="form">
     <div class="line1">
       <div class="group">
         <input type="number" formControlName="amount" />
@@ -7,7 +7,7 @@
         <span class="error">Amount is required</span>
         }
       </div>
-      <div class="group">
+      <div class="group full-width">
         <input
           #inputField
           type="text"

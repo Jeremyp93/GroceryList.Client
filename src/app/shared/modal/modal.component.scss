@@ -11,11 +11,15 @@
 
     .modal-content {
         background-color: #fefefe;
-        margin: 50% auto;
+        margin: 5% auto;
         padding: 10px;
         border: 1px solid #888;
         position: relative;
         width: 40%;
+
+        @media screen and (max-width: 768px) {
+            margin: 50% auto;
+        }
         
         @media screen and (max-width: 768px) {
             width: 80%;

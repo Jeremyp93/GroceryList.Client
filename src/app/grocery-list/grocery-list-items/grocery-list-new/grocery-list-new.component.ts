@@ -100,6 +100,7 @@ export class GroceryListNewComponent implements OnInit {
       const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.idToEdit!));
       name = groceryList.name;
       storeId = groceryList.storeId ?? '';
+      if (this.isGuidEmpty(storeId)) storeId = '';
       if (storeId) {
         const store = await lastValueFrom(await this.storeService.getStoreById(storeId));
         this.categories = store.sections.map(s => s.name);
@@ -143,5 +144,10 @@ export class GroceryListNewComponent implements OnInit {
     if (elements[index]) {
       elements[index].nativeElement.focus();
     }
+  }
+
+  private isGuidEmpty = (guid: string) => {
+    const emptyGuid = '00000000-0000-0000-0000-000000000000';
+    return guid === emptyGuid;
   }
 }

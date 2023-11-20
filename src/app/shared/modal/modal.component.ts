@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, HostListener, inject, Renderer2, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, HostListener, inject, Renderer2, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({

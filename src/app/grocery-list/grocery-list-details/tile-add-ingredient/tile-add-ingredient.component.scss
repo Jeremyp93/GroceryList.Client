@@ -5,44 +5,52 @@
     padding: 10px;
     margin: 5px;
 
-    .line1 {
-        display: flex;
+    .form {
+        width: 100%;
 
-        .group {
-            input[type="number"]::-webkit-inner-spin-button,
-            input[type="number"]::-webkit-outer-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-        
-            input[type="number"] {
-                width: 20px;
-                margin-right: 5px;
-                -moz-appearance: textfield;
-                //Firefox
-            }
-
+        .line1 {
             display: flex;
-            flex-direction: column;
+    
+            .group {
+                display: flex;
+                flex-direction: column;
 
-            span {
-                align-self: flex-start;
-                color: #EB5E55;
-                font-size: small;
-                margin-top: 5px;
+                &.full-width {
+                    width: 100%;
+                }
+
+                input[type="number"]::-webkit-inner-spin-button,
+                input[type="number"]::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+    
+                input[type="number"] {
+                    width: 20px;
+                    margin-right: 5px;
+                    -moz-appearance: textfield;
+                    //Firefox
+                }
+    
+                span {
+                    align-self: flex-start;
+                    color: #EB5E55;
+                    font-size: small;
+                    margin-top: 5px;
+                }
             }
         }
-    }
-
-    .line2 {
-        display: flex;
-
-        div {
-            width: 30px;
-            margin-left: 5px;
+    
+        .line2 {
             display: flex;
-            justify-content: center;
-            align-items: center;
+    
+            div {
+                width: 30px;
+                margin-left: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         }
     }
 }
