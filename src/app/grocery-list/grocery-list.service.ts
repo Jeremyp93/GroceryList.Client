@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { BehaviorSubject, lastValueFrom, map, tap } from "rxjs";
 
-import { Store, StoreService } from "../stores/store.service";
+import { Store, StoreService } from "../store/store.service";
 
 @Injectable({ providedIn: 'root' })
 export class GroceryListService {

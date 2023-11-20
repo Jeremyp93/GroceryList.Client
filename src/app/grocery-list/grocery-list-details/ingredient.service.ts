@@ -2,7 +2,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, lastValueFrom } from 'rxjs';
 import { GroceryListService, Ingredient } from '../grocery-list.service';
-import { Section } from '../../stores/store.service';
+import { Section } from '../../store/store.service';
 
 @Injectable({
     providedIn: 'root'

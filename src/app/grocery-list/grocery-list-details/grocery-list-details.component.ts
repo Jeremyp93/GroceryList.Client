@@ -13,7 +13,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 import { TileAddIngredientComponent } from './tile-add-ingredient/tile-add-ingredient.component';
 import { ModalComponent } from '../../shared/modal/modal.component';
-import { StoreService } from '../../stores/store.service';
+import { StoreService } from '../../store/store.service';
 
 @Component({
   selector: 'app-grocery-list-details',

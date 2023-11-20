@@ -5,7 +5,7 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { HeaderComponent } from '../../../shared/header/header.component';
-import { StoreService } from '../../../stores/store.service';
+import { StoreService } from '../../../store/store.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { GroceryListService, Ingredient } from '../../grocery-list.service';
 

@@ -74,16 +74,16 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
   }
 
   selectList = (id: string) => {
-    this.router.navigate(['grocery-list', id]);
+    this.router.navigate(['grocery-lists', id]);
   }
 
   newList = () => {
-    this.router.navigate(['grocery-list', 'new']);
+    this.router.navigate(['grocery-lists', 'new']);
   }
 
   editList = (event: Event, id: string) => {
     this.preventPropagation(event);
-    this.router.navigate(['grocery-list', id, 'edit']);
+    this.router.navigate(['grocery-lists', id, 'edit']);
   }
 
   showDeleteList = (event: Event, id: string) => {
