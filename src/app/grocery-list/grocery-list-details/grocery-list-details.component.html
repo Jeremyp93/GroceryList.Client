@@ -47,6 +47,7 @@
 </div>
 @if(!error) {
 <ul>
+  <ng-template #dynamicComponentContainer></ng-template>
   @for(ingredient of ingredients; track ingredient.id) {
   <li (click)="putInBasket($index)" @tileFadeSlideOut>
     <app-tile-ingredient

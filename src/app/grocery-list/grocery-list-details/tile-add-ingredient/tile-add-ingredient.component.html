@@ -1,0 +1,41 @@
+<div class="tile-add-container">
+  <form [formGroup]="addForm">
+    <div class="line1">
+      <div class="group">
+        <input type="number" formControlName="amount" />
+        @if(addForm.get("amount")?.invalid && formSubmitted) {
+        <span class="error">Amount is required</span>
+        }
+      </div>
+      <div class="group">
+        <input
+          #inputField
+          type="text"
+          placeholder="Name"
+          formControlName="name"
+          (keydown.enter)="onEnterPressed()"
+        />
+        @if(addForm.get("name")?.invalid && formSubmitted) {
+        <span class="error">Name is required</span>
+        }
+      </div>
+    </div>
+    <div class="line2">
+      <select name="category" id="category" formControlName="category">
+        <option value="" selected>No category</option>
+        @for (category of categories; track $index) {
+        <option [value]="category">{{ category }}</option>
+        }
+      </select>
+      <div>
+        <app-button (click)="addItem()"
+          ><img
+            src="../../../../assets/icons/icons8-check-24.png"
+            alt="add-icon"
+            width="20"
+          />
+        </app-button>
+      </div>
+    </div>
+  </form>
+</div>

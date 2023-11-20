@@ -19,6 +19,10 @@ export class IngredientService {
         this.sections = sections;
     }
 
+    getSections = () => {
+        return [...this.sections];
+    }
+
     getIngredients = (): Ingredient[] => {
         return this.ingredientsSubject.value;
     }
@@ -73,8 +77,19 @@ export class IngredientService {
         const newIngredients = await lastValueFrom(this.groceryListService.updateIngredients(groceryListId, [...this.getIngredients()]));
     }
 
+    addIngredient = (ingredient: Ingredient) => {
+        const ingredients = [...this.getIngredients()];
+        ingredients.push({ ...ingredient, id: this.generateGUID() })
+        this.setAndSortIngredientsByPriority(ingredients);
+    }
+
     private getSectionPriority = (category: string | null): number => {
         const section = this.sections.find((s) => s.name === category);
         return section ? section.priority : 0;
+    }
+
+    private generateGUID = (): string => {
+        const randomHex = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        return `${randomHex()}${randomHex()}-${randomHex()}-4${randomHex().substr(0, 3)}-${randomHex()}-${randomHex()}${randomHex()}${randomHex()}`;
     }
 }

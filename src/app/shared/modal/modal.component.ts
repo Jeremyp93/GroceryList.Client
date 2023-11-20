@@ -35,7 +35,6 @@ export class ModalComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('test');
     this.renderer.removeClass(document.body, 'modal-open');
   }
 }

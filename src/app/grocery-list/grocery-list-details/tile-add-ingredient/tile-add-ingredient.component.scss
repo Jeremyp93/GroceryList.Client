@@ -1,0 +1,48 @@
+.tile-add-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+
+    .line1 {
+        display: flex;
+
+        .group {
+            input[type="number"]::-webkit-inner-spin-button,
+            input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        
+            input[type="number"] {
+                width: 20px;
+                margin-right: 5px;
+                -moz-appearance: textfield;
+                //Firefox
+            }
+
+            display: flex;
+            flex-direction: column;
+
+            span {
+                align-self: flex-start;
+                color: #EB5E55;
+                font-size: small;
+                margin-top: 5px;
+            }
+        }
+    }
+
+    .line2 {
+        display: flex;
+
+        div {
+            width: 30px;
+            margin-left: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}

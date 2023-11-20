@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { Subscription, lastValueFrom } from 'rxjs';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { GroceryListService, Ingredient } from '../grocery-list.service';
 import { TileIngredientComponent } from './tile-ingredient/tile-ingredient.component';
@@ -10,11 +11,12 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { LoadingComponent } from '../../shared/loading/loading.component';
+import { TileAddIngredientComponent } from './tile-add-ingredient/tile-add-ingredient.component';
 
 @Component({
   selector: 'app-grocery-list-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent, ButtonComponent, LoadingComponent],
+  imports: [CommonModule, RouterModule, TileIngredientComponent, HeaderComponent, ButtonComponent, LoadingComponent, ReactiveFormsModule],
   templateUrl: './grocery-list-details.component.html',
   styleUrl: './grocery-list-details.component.scss',
   animations: [
@@ -26,6 +28,7 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   ],
 })
 export class GroceryListDetailsComponent implements OnInit, OnDestroy {
+  @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) dynamicComponentContainer!: ViewContainerRef;
   route = inject(ActivatedRoute);
   router = inject(Router);
   groceryListService = inject(GroceryListService);
@@ -37,6 +40,8 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   title: string = 'Ingredients to buy';
   saved: boolean = false;
   isLoading: boolean = false;
+  itemAddedSubscription: Subscription | null = null;
+  addFormClosedSubscription: Subscription | null = null;
 
   ngOnInit(): void {
     this.ingredientSubscription = this.ingredientService.ingredients$.subscribe(ingredients => this.ingredients = ingredients);
@@ -62,7 +67,19 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   }
 
   newIngredient = () => {
-
+    const componentRef = this.dynamicComponentContainer.createComponent(TileAddIngredientComponent);
+    componentRef.setInput('sections', this.ingredientService.getSections());
+    this.itemAddedSubscription = componentRef.instance.itemAdded.subscribe(ingredient => {
+      this.ingredientService.addIngredient(ingredient);
+      this.itemAddedSubscription?.unsubscribe();
+      this.dynamicComponentContainer.clear();
+    });
+    setTimeout(() => {
+      this.addFormClosedSubscription = componentRef.instance.onClickOutside.subscribe(_ => {
+        this.addFormClosedSubscription?.unsubscribe();
+        this.dynamicComponentContainer.clear();
+      });
+    });
   }
 
   deleteIngredient = (id: string) => {
@@ -86,5 +103,11 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ingredientSubscription.unsubscribe();
     this.ingredientService.setIngredients([]);
+    if (this.itemAddedSubscription) {
+      this.itemAddedSubscription.unsubscribe();
+    }
+    if (this.addFormClosedSubscription) {
+      this.addFormClosedSubscription.unsubscribe();
+    }
   }
 }

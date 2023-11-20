@@ -30,7 +30,6 @@ export class GroceryListService {
     }
 
     addGroceryList = async (list: GroceryList) => {
-        console.log(list);
         let store: Store | null = null;
         if (list.storeId) {
             store = await lastValueFrom(await this.storeService.getStoreById(list.storeId));
