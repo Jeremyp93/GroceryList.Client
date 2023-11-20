@@ -17,11 +17,8 @@
         position: relative;
         width: 40%;
 
-        @media screen and (max-width: 768px) {
+        @media screen and (max-width: 991px) {
             margin: 50% auto;
-        }
-        
-        @media screen and (max-width: 768px) {
             width: 80%;
         }
 

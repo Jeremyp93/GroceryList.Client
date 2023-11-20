@@ -101,7 +101,7 @@ ul {
             display: flex;
             justify-content: space-between;
 
-            @media screen and (max-width: 768px) {
+            @media screen and (max-width: 991px) {
                 flex-direction: column;
             }
 
@@ -115,7 +115,7 @@ ul {
                 font-size: medium;
                 font-weight: bold;
 
-                @media screen and (max-width: 768px) {
+                @media screen and (max-width: 991px) {
                     justify-content: center;
                     padding: 10px;
                     font-weight: bolder;
@@ -129,7 +129,7 @@ ul {
                 justify-content: center;
                 align-items: center;
 
-                @media screen and (max-width: 768px) {
+                @media screen and (max-width: 991px) {
                     cursor: pointer;
                 }
         
