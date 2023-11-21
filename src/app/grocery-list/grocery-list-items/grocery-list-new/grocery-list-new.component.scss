@@ -110,17 +110,6 @@ form {
 
         &.top {
             margin-bottom: 10px;
-            .button-submit {
-                color: white;
-                .myButton:hover {
-                    background-color: #EB5E55;
-
-                    img {
-                        filter: invert(100%);
-                    }
-                }
-            }
-            
         }
 
         &.bottom {
