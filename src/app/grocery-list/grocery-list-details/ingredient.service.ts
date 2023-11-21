@@ -74,7 +74,7 @@ export class IngredientService {
     }
 
     saveIngredients = async (groceryListId: string) => {
-        const newIngredients = await lastValueFrom(this.groceryListService.updateIngredients(groceryListId, [...this.getIngredients()]));
+        await lastValueFrom(this.groceryListService.updateIngredients(groceryListId, [...this.getIngredients()]));
     }
 
     addIngredient = (ingredient: Ingredient) => {

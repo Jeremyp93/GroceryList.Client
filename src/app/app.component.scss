@@ -28,7 +28,15 @@
             flex: 1;
 
             &.active {
-                background-color: #CCD7E4;
+                background-color: #C8963E;
+
+                a{
+                    color: white;
+
+                    img {
+                        filter: invert(100%);
+                    }
+                }
             }
 
             a {

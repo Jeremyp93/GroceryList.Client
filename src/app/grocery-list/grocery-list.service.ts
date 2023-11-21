@@ -68,6 +68,7 @@ export class GroceryListService {
             ingr.category = ingr.category || null;
         });
 
+
         this.httpClient.put<any>(`http://localhost:5058/api/grocerylists/${id}`, list).subscribe(_ => {
             const lists = [...this.groceryListUpdated.value];
             const index = lists.findIndex(l => l.id === id);
