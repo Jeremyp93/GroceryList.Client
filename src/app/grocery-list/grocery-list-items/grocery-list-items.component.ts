@@ -48,6 +48,7 @@ export class GroceryListItemsComponent implements OnInit {
   duplicateForm!: FormGroup;
   duplicateFormSubmitted = false;
   isLoading: boolean = false;
+  #selectedList: GroceryList | null = null;
 
   get buttonStyles(): typeof ButtonStyle {
     return ButtonStyle;
@@ -109,8 +110,7 @@ export class GroceryListItemsComponent implements OnInit {
 
   openModal = (event: Event, list: GroceryList): void => {
     this.preventPropagation(event);
-    console.log(list);
-    this.ngStore.dispatch(new SetSelectedGroceryList(list));
+    this.#selectedList = list;
     this.modalOpen = true;
   }
 
@@ -121,16 +121,14 @@ export class GroceryListItemsComponent implements OnInit {
   onSubmitDuplicateForm = async () => {
     this.duplicateFormSubmitted = true;
     if (this.duplicateForm.invalid) return;
-    this.selectedGroceryList$.subscribe(selectedList => {
-      if (!selectedList) return;
-      this.isLoading = true;
-      const name = this.duplicateForm.get('name')?.value;
-      const list = { ...selectedList, name: name };
-      this.ngStore.dispatch(new AddGroceryList(list)).subscribe(_ => {
-        this.duplicateForm.reset();
-        this.ngStore.dispatch(new SetSelectedGroceryList(null));
-        this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
-      });
+    if (!this.#selectedList) return;
+    this.isLoading = true;
+    const name = this.duplicateForm.get('name')?.value;
+    const list = { ...this.#selectedList, name: name };
+    this.ngStore.dispatch(new AddGroceryList(list)).subscribe(_ => {
+      this.duplicateForm.reset();
+      this.ngStore.dispatch(new SetSelectedGroceryList(null));
+      this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
     });
   }
 

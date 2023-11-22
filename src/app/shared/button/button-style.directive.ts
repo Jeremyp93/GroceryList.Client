@@ -12,11 +12,11 @@ export class ButtonStyleDirective implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['style']) {
-      this.applyButtonStyle(changes['style'].currentValue);
+      this.#applyButtonStyle(changes['style'].currentValue);
     }
   }
 
-  private applyButtonStyle(style: ButtonStyle) {
+  #applyButtonStyle(style: ButtonStyle) {
     switch (style) {
       case ButtonStyle.danger:
         this.renderer.addClass(this.elementRef.nativeElement, 'danger');

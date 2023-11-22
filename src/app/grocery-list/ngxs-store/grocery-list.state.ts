@@ -54,7 +54,6 @@ export class GroceryListState {
         } else {
             list = { id: '', name: payload.name, storeId: payload.store?.id ?? '', ingredients: payload.ingredients };
         }
-
         return this.groceryListService.addGroceryList(list).pipe(tap((result) => {
             const state = getState();
             patchState({

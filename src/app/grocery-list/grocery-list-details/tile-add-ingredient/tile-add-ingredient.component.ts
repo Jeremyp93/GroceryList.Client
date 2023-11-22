@@ -33,7 +33,7 @@ export class TileAddIngredientComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.categories = this.sections.map(s => s.name) ?? [];
-    this.initForm();
+    this.#initForm();
   }
 
   ngAfterViewInit(): void {
@@ -51,7 +51,7 @@ export class TileAddIngredientComponent implements OnInit, AfterViewInit {
     this.addItem();
   }
 
-  private initForm = () => {
+  #initForm = () => {
     this.addForm = new FormGroup({
       amount: new FormControl(1, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
       name: new FormControl('', Validators.required),

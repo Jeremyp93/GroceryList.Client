@@ -51,7 +51,7 @@ export class GroceryListNewComponent implements OnInit {
       if (this.idToEdit) {
         this.editMode = true;
       }
-      await this.initForm();
+      await this.#initForm();
       this.stores$ = this.storeService.getAllStores();
     });
   }
@@ -65,7 +65,7 @@ export class GroceryListNewComponent implements OnInit {
       'category': new FormControl("")
     }));
     setTimeout(() => {
-      this.focusOnControl(0);
+      this.#focusOnControl(0);
     }, 50);
   }
 
@@ -104,7 +104,7 @@ export class GroceryListNewComponent implements OnInit {
     this.onAddIngredient();
   }
 
-  private initForm = async () => {
+  #initForm = async () => {
     let name: string = '';
     let storeId: string = '';
     let ingredients: FormArray<any> = new FormArray<any>([]);
@@ -135,17 +135,7 @@ export class GroceryListNewComponent implements OnInit {
     });
   }
 
-  private markFormGroupAsTouched = (formGroup: FormGroup | FormArray) => {
-    Object.values(formGroup.controls).forEach(control => {
-      if (control instanceof FormGroup || control instanceof FormArray) {
-        this.markFormGroupAsTouched(control);
-      } else {
-        control.markAsTouched();
-      }
-    });
-  }
-
-  private focusOnControl = (index: number) => {
+  #focusOnControl = (index: number) => {
     const elements = this.inputFields.toArray();
     if (elements[index]) {
       elements[index].nativeElement.focus();

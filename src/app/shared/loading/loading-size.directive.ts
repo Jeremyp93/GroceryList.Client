@@ -11,14 +11,14 @@ export class LoadingSizeDirective implements OnInit {
     renderer = inject(Renderer2);
 
     ngOnInit() {
-        const width = this.getWidth();
-        const height = this.getHeight();
+        const width = this.#getWidth();
+        const height = this.#getHeight();
 
         this.renderer.setStyle(this.elementRef.nativeElement, 'width', `${width}px`);
         this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${height}px`);
     }
 
-    private getWidth(): number {
+    #getWidth(): number {
         switch (this.size) {
             case LoadingSize.small:
                 return 15;
@@ -31,7 +31,7 @@ export class LoadingSizeDirective implements OnInit {
         }
     }
 
-    private getHeight(): number {
+    #getHeight(): number {
         switch (this.size) {
             case LoadingSize.small:
                 return 15;
