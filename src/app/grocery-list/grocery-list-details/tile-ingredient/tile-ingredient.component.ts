@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { Ingredient } from '../../types/ingredient.type';
+import { ButtonStyle } from '../../../shared/button/button-style.enum';
 
 @Component({
   selector: 'app-tile-ingredient',
@@ -14,6 +15,10 @@ import { Ingredient } from '../../types/ingredient.type';
 export class TileIngredientComponent {
   @Input() ingredient: Ingredient | null = null
   @Output() onIngredientDeleted: EventEmitter<string> = new EventEmitter<string>();
+
+  get buttonStyles(): typeof ButtonStyle {
+    return ButtonStyle;
+  }
 
   showDeleteList = (event: Event) => {
     event.stopImmediatePropagation();

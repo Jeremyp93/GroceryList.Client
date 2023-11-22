@@ -8,7 +8,9 @@
     <span>{{ ingredient.category }}</span>
   </div>
   <div>
-    <app-button [danger]="true" (click)="showDeleteList($event)"
+    <app-button
+      [buttonStyle]="buttonStyles.danger"
+      (click)="showDeleteList($event)"
       ><img
         src="../../../assets/icons/icons8-delete-24.png"
         alt="delete-icon"

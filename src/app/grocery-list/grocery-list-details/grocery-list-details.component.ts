@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, firstValueFrom, lastValueFrom, take } from 'rxjs';
+import { Observable, Subscription, lastValueFrom, take } from 'rxjs';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Select, Store as NgxsStore } from '@ngxs/store';
 
@@ -22,6 +22,7 @@ import { AddIngredient, DeleteIngredient, ResetIngredients, SaveIngredients, Sel
 import { AddGroceryList, SetSelectedGroceryList } from '../ngxs-store/grocery-list.actions';
 import { GroceryListState } from '../ngxs-store/grocery-list.state';
 import { GroceryList } from '../types/grocery-list.type';
+import { ButtonStyle } from '../../shared/button/button-style.enum';
 
 @Component({
   selector: 'app-grocery-list-details',
@@ -35,7 +36,7 @@ import { GroceryList } from '../types/grocery-list.type';
         animate('300ms', style({ transform: 'translateX(100%)' })),
       ]),
     ])
-  ],
+  ]
 })
 export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) dynamicComponentContainer!: ViewContainerRef;
@@ -60,6 +61,11 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   exportForm!: FormGroup;
   exportFormSubmitted: boolean = false;
   storeId: string | undefined;
+  saveProcess: boolean = false;
+
+  get buttonStyles(): typeof ButtonStyle {
+    return ButtonStyle;
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params: Params) => {
@@ -115,15 +121,16 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   }
 
   saveIngredients = async () => {
+    this.saveProcess = true;
     this.isLoading = true;
     this.ngStore.dispatch(new SaveIngredients(this.id)).subscribe(_ => {
       this.isLoading = false;
       this.saved = true;
       setTimeout(() => {
         this.saved = false;
+        this.saveProcess = false;
       }, 1000);
     });
-
   }
 
   exportToNewList = async (event: Event) => {

@@ -18,7 +18,7 @@
     </app-button>
     <app-button
       (click)="saveIngredients()"
-      [success]="saved"
+      [buttonStyle]="saved ? buttonStyles.success : buttonStyles.normal"
       [disabled]="saved"
       [loading]="isLoading"
     >
@@ -56,7 +56,11 @@
 <ul>
   <ng-template #dynamicComponentContainer></ng-template>
   @for(ingredient of ingredients$ | async; track ingredient.id) {
-  <li (click)="putInBasket($index)" @tileFadeSlideOut>
+  <li
+    (click)="putInBasket($index)"
+    @tileFadeSlideOut
+    [@.disabled]="saveProcess"
+  >
     <app-tile-ingredient
       [ingredient]="ingredient"
       (onIngredientDeleted)="deleteIngredient($event)"

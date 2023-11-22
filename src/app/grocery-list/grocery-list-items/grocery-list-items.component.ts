@@ -13,6 +13,7 @@ import { GroceryList } from '../types/grocery-list.type';
 import { Select, Store } from '@ngxs/store';
 import { GroceryListState } from '../ngxs-store/grocery-list.state';
 import { AddGroceryList, DeleteGroceryList, GetGroceryLists, SetSelectedGroceryList } from '../ngxs-store/grocery-list.actions';
+import { ButtonStyle } from '../../shared/button/button-style.enum';
 
 @Component({
   selector: 'app-grocery-list-items',
@@ -47,6 +48,10 @@ export class GroceryListItemsComponent implements OnInit {
   duplicateForm!: FormGroup;
   duplicateFormSubmitted = false;
   isLoading: boolean = false;
+
+  get buttonStyles(): typeof ButtonStyle {
+    return ButtonStyle;
+  }
 
   ngOnInit(): void {
     this.ngStore.dispatch(new GetGroceryLists());

@@ -86,7 +86,7 @@
         </div>
         <div class="ingredient-delete">
           <app-button
-            [danger]="true"
+            [buttonStyle]="buttonStyles.danger"
             (click)="onDeleteIngredient(ingredientControl.value.id)"
             ><img
               src="../../../assets/icons/icons8-delete-24.png"

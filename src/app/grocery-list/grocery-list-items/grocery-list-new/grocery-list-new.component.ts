@@ -13,6 +13,7 @@ import { GroceryListService } from '../../grocery-list.service';
 import { Ingredient } from '../../types/ingredient.type';
 import { Store } from '../../../store/types/store.type';
 import { AddGroceryList, UpdateGroceryList } from '../../ngxs-store/grocery-list.actions';
+import { ButtonStyle } from '../../../shared/button/button-style.enum';
 
 @Component({
   selector: 'app-grocery-list-new',
@@ -38,6 +39,10 @@ export class GroceryListNewComponent implements OnInit {
 
   get ingredientControls() { // a getter!
     return (this.groceryListForm.get('ingredients') as FormArray).controls;
+  }
+
+  get buttonStyles(): typeof ButtonStyle {
+    return ButtonStyle;
   }
 
   ngOnInit(): void {
