@@ -1,35 +1,18 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { Subject, lastValueFrom, map } from "rxjs";
+import { Observable } from "rxjs";
+
+import { Store } from "./types/store.type";
 
 @Injectable({ providedIn: 'root' })
 export class StoreService {
     httpClient = inject(HttpClient);
-    private storeUpdated = new Subject<Store[]>();
-    storeUpdated$ = this.storeUpdated.asObservable();
 
-    getAllStores = async () => {
-        const stores = await lastValueFrom(this.httpClient.get<Store[]>('http://localhost:5058/api/stores'));
-        this.storeUpdated.next([...stores]);
+    getAllStores = (): Observable<Store[]> => {
+        return this.httpClient.get<Store[]>('http://localhost:5058/api/stores');
     }
 
-    getStoreById = async (id: string) => {
+    getStoreById = (id: string): Observable<Store> => {
         return this.httpClient.get<Store>(`http://localhost:5058/api/stores/${id}`);
     }
-}
-
-export type Store = {
-    id: string;
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zipCode: string;
-    sections: Section[];
-}
-
-export type Section = {
-    name: string;
-    priority: number;
 }

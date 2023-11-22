@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { ButtonComponent } from '../../../shared/button/button.component';
-import { Ingredient } from '../../grocery-list.service';
+import { Ingredient } from '../../types/ingredient.type';
 
 @Component({
   selector: 'app-tile-ingredient',

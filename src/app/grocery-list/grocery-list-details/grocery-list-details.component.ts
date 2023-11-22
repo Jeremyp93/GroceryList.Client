@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
-import { Subscription, lastValueFrom } from 'rxjs';
+import { Observable, Subscription, firstValueFrom, lastValueFrom, take } from 'rxjs';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Select, Store as NgxsStore } from '@ngxs/store';
 
-import { GroceryListService, Ingredient } from '../grocery-list.service';
+import { GroceryListService } from '../grocery-list.service';
 import { TileIngredientComponent } from './tile-ingredient/tile-ingredient.component';
-import { IngredientService } from './ingredient.service';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -14,6 +14,14 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
 import { TileAddIngredientComponent } from './tile-add-ingredient/tile-add-ingredient.component';
 import { ModalComponent } from '../../shared/modal/modal.component';
 import { StoreService } from '../../store/store.service';
+import { Ingredient } from '../types/ingredient.type';
+import { Store } from '../../store/types/store.type';
+import { Section } from '../../store/types/section.type';
+import { IngredientState } from '../ngxs-store/ingredient.state';
+import { AddIngredient, DeleteIngredient, ResetIngredients, SaveIngredients, SelectIngredient } from '../ngxs-store/ingredient.actions';
+import { AddGroceryList, SetSelectedGroceryList } from '../ngxs-store/grocery-list.actions';
+import { GroceryListState } from '../ngxs-store/grocery-list.state';
+import { GroceryList } from '../types/grocery-list.type';
 
 @Component({
   selector: 'app-grocery-list-details',
@@ -35,10 +43,13 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   router = inject(Router);
   storeService = inject(StoreService);
   groceryListService = inject(GroceryListService);
-  ingredientService = inject(IngredientService);
-  ingredientSubscription!: Subscription;
+  ngStore = inject(NgxsStore);
+  @Select(IngredientState.getIngredients) ingredients$!: Observable<Ingredient[]>;
+  @Select(IngredientState.getSections) sections$!: Observable<Section[]>;
+  @Select(GroceryListState.getSelectedGroceryList) selectedGrocery$!: Observable<GroceryList>;
+  stores$!: Observable<Store[]>;
   id = '';
-  ingredients: Ingredient[] = [];
+  sections: Section[] = [];
   error: boolean = false;
   title: string = 'Ingredients to buy';
   saved: boolean = false;
@@ -48,17 +59,19 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   modalOpen: boolean = false;
   exportForm!: FormGroup;
   exportFormSubmitted: boolean = false;
-  storeId: string | null = null;
+  storeId: string | undefined;
 
   ngOnInit(): void {
-    this.ingredientSubscription = this.ingredientService.ingredients$.subscribe(ingredients => this.ingredients = ingredients);
     this.route.params.subscribe(async (params: Params) => {
       this.id = params['id'];
-      const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.id));
-      this.storeId = groceryList.storeId;
+      const groceryList = await lastValueFrom(this.groceryListService.getGroceryList(this.id));
+      this.selectedGrocery$.pipe(take(1)).subscribe(list => {
+        if (!list) {
+          this.ngStore.dispatch(new SetSelectedGroceryList(groceryList));
+        }
+      });
+      this.storeId = groceryList.store?.id;
       this.title = groceryList.name;
-      this.ingredientService.setSections(groceryList.store?.sections ?? []);
-      this.ingredientService.setAndSortIngredientsByPriority(groceryList.ingredients);
       this.initForm();
     });
   }
@@ -68,50 +81,54 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   }
 
   putInBasket = (index: number) => {
-    this.ingredientService.putInBasket(index);
+    this.ngStore.dispatch(new SelectIngredient(index));
   }
 
   resetIngredients = () => {
-    this.ingredientService.resetIngredients();
+    this.ngStore.dispatch(new ResetIngredients());
   }
 
-  newIngredient = () => {
+  newIngredient = async () => {
     const componentRef = this.dynamicComponentContainer.createComponent(TileAddIngredientComponent);
-    componentRef.setInput('sections', this.ingredientService.getSections());
-    this.itemAddedSubscription = componentRef.instance.itemAdded.subscribe(ingredient => {
-      this.ingredientService.addIngredient(ingredient);
-      this.itemAddedSubscription?.unsubscribe();
-      this.dynamicComponentContainer.clear();
-    });
-    setTimeout(() => {
-      this.addFormClosedSubscription = componentRef.instance.onClickOutside.subscribe(_ => {
-        this.addFormClosedSubscription?.unsubscribe();
+    this.sections$.pipe(take(1)).subscribe(sections => {
+      componentRef.setInput('sections', sections);
+      this.itemAddedSubscription = componentRef.instance.itemAdded.subscribe(ingredient => {
+        this.ngStore.dispatch(new AddIngredient(ingredient));
+        this.itemAddedSubscription?.unsubscribe();
         this.dynamicComponentContainer.clear();
+      });
+      setTimeout(() => {
+        this.addFormClosedSubscription = componentRef.instance.onClickOutside.subscribe(_ => {
+          this.addFormClosedSubscription?.unsubscribe();
+          this.dynamicComponentContainer.clear();
+        });
       });
     });
   }
 
   deleteIngredient = (id: string) => {
-    this.ingredientService.deleteIngredient(id);
+    this.ngStore.dispatch(new DeleteIngredient(id));
   }
 
-  editIngredient = () => {
+  editGroceryList = () => {
     this.router.navigate(['edit'], { relativeTo: this.route });
   }
 
   saveIngredients = async () => {
     this.isLoading = true;
-    await this.ingredientService.saveIngredients(this.id);
-    this.isLoading = false;
-    this.saved = true;
-    setTimeout(() => {
-      this.saved = false;
-    }, 1000);
+    this.ngStore.dispatch(new SaveIngredients(this.id)).subscribe(_ => {
+      this.isLoading = false;
+      this.saved = true;
+      setTimeout(() => {
+        this.saved = false;
+      }, 1000);
+    });
+
   }
 
   exportToNewList = async (event: Event) => {
     event.stopPropagation();
-    await this.storeService.getAllStores();
+    this.stores$ = this.storeService.getAllStores();
     this.modalOpen = true;
   }
 
@@ -120,16 +137,15 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
     const storeId = this.exportForm.value.storeId;
     this.exportFormSubmitted = true;
     if (this.exportForm.invalid) return;
-    const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.id));
-    const newList = { ...groceryList, name: name, storeId: storeId, ingredients: [...this.ingredientService.getIngredients().filter(i => !i.selected)] };
-    await this.groceryListService.addGroceryList(newList);
-    this.exportForm.reset();
-    this.exportFormSubmitted = false;
-    this.back();
-  }
-
-  getCategories = (): string[] => {
-    return this.ingredientService.getSections().map(s => s.name);
+    const groceryList = await lastValueFrom(this.groceryListService.getGroceryList(this.id));
+    this.ingredients$.pipe(take(1)).subscribe(ingredients => {
+      const newList = { ...groceryList, name: name, storeId: storeId, ingredients: [...ingredients.filter(i => !i.selected)] };
+      this.ngStore.dispatch(new AddGroceryList(newList)).subscribe(_ => {
+        this.exportForm.reset();
+        this.exportFormSubmitted = false;
+        this.back();
+      });
+    });
   }
 
   initForm = () => {
@@ -140,8 +156,7 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ingredientSubscription.unsubscribe();
-    this.ingredientService.setIngredients([]);
+    //this.ingredientService.setIngredients([]);
     if (this.itemAddedSubscription) {
       this.itemAddedSubscription.unsubscribe();
     }

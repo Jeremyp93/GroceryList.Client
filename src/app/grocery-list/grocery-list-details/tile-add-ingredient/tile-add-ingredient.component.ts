@@ -1,10 +1,10 @@
 import { Component, HostListener, OnInit, Output, EventEmitter, inject, ElementRef, Input, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent } from '../../../shared/button/button.component';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EventManagerPlugin } from '@angular/platform-browser';
-import { Ingredient } from '../../grocery-list.service';
-import { Section } from '../../../store/store.service';
+
+import { ButtonComponent } from '../../../shared/button/button.component';
+import { Ingredient } from '../../types/ingredient.type';
+import { Section } from '../../../store/types/section.type';
 
 @Component({
   selector: 'app-tile-add-ingredient',

@@ -1,13 +1,18 @@
 import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription, lastValueFrom } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { v4 as UUID } from 'uuid';
+import { Store as NgxsStore } from '@ngxs/store';
 
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { StoreService } from '../../../store/store.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
-import { GroceryListService, Ingredient } from '../../grocery-list.service';
+import { GroceryListService } from '../../grocery-list.service';
+import { Ingredient } from '../../types/ingredient.type';
+import { Store } from '../../../store/types/store.type';
+import { AddGroceryList, UpdateGroceryList } from '../../ngxs-store/grocery-list.actions';
 
 @Component({
   selector: 'app-grocery-list-new',
@@ -21,6 +26,8 @@ export class GroceryListNewComponent implements OnInit {
   groceryListService = inject(GroceryListService);
   router = inject(Router);
   route = inject(ActivatedRoute);
+  ngStore = inject(NgxsStore);
+  stores$!: Observable<Store[]>;
   groceryListForm!: FormGroup;
   categories: string[] = [];
   editMode: boolean = false;
@@ -40,14 +47,14 @@ export class GroceryListNewComponent implements OnInit {
         this.editMode = true;
       }
       await this.initForm();
-      this.storeService.getAllStores();
+      this.stores$ = this.storeService.getAllStores();
     });
   }
 
   onAddIngredient = () => {
     const ingredients = this.groceryListForm.get('ingredients') as FormArray;
     ingredients.insert(0, new FormGroup({
-      'id': new FormControl(this.generateGUID()),
+      'id': new FormControl(UUID()),
       'name': new FormControl(null, Validators.required),
       'amount': new FormControl("1", [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
       'category': new FormControl("")
@@ -63,17 +70,18 @@ export class GroceryListNewComponent implements OnInit {
     ingredients.removeAt(index);
   }
 
-  onSubmit = async () => {
+  onSubmit = () => {
     this.submitted = true;
     if (this.groceryListForm.invalid) return;
     if (this.editMode) {
       if (!this.groceryListForm.pristine) {
-        await this.groceryListService.updateGroceryList(this.idToEdit!, this.groceryListForm.value);
+        this.ngStore.dispatch(new UpdateGroceryList(this.groceryListForm.value, this.idToEdit!)).subscribe(_ => this.#back());
+      } else {
+        this.#back();
       }
     } else {
-      await this.groceryListService.addGroceryList(this.groceryListForm.value);
+      this.ngStore.dispatch(new AddGroceryList(this.groceryListForm.value)).subscribe(_ => this.#back());
     }
-    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   onChangeStore = async (event: Event) => {
@@ -82,7 +90,7 @@ export class GroceryListNewComponent implements OnInit {
       this.categories = [];
       return;
     }
-    const store = await lastValueFrom(await this.storeService.getStoreById(selectedValue));
+    const store = await lastValueFrom(this.storeService.getStoreById(selectedValue));
     this.categories = store.sections.map(s => s.name);
   }
 
@@ -97,13 +105,11 @@ export class GroceryListNewComponent implements OnInit {
     let ingredients: FormArray<any> = new FormArray<any>([]);
 
     if (this.editMode) {
-      const groceryList = await lastValueFrom(await this.groceryListService.getGroceryList(this.idToEdit!));
+      const groceryList = await lastValueFrom(this.groceryListService.getGroceryList(this.idToEdit!));
       name = groceryList.name;
-      storeId = groceryList.storeId ?? '';
-      if (this.isGuidEmpty(storeId)) storeId = '';
-      if (storeId) {
-        const store = await lastValueFrom(await this.storeService.getStoreById(storeId));
-        this.categories = store.sections.map(s => s.name);
+      if (groceryList.store) {
+        storeId = groceryList.store.id;
+        this.categories = groceryList.store.sections.map(s => s.name);
       }
       if (groceryList.ingredients.length > 0) {
         groceryList.ingredients.forEach((ingredient: Ingredient) => {
@@ -124,11 +130,6 @@ export class GroceryListNewComponent implements OnInit {
     });
   }
 
-  private generateGUID = () => {
-    const randomHex = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    return `${randomHex()}${randomHex()}-${randomHex()}-4${randomHex().substr(0, 3)}-${randomHex()}-${randomHex()}${randomHex()}${randomHex()}`;
-  }
-
   private markFormGroupAsTouched = (formGroup: FormGroup | FormArray) => {
     Object.values(formGroup.controls).forEach(control => {
       if (control instanceof FormGroup || control instanceof FormArray) {
@@ -146,8 +147,7 @@ export class GroceryListNewComponent implements OnInit {
     }
   }
 
-  private isGuidEmpty = (guid: string) => {
-    const emptyGuid = '00000000-0000-0000-0000-000000000000';
-    return guid === emptyGuid;
+  #back = () => {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 }

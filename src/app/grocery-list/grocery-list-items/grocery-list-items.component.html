@@ -34,10 +34,9 @@
     </app-button>
   </div>
 </div>
-@if(groceryLists.length > 0) {
 <ul>
-  @for (groceryList of groceryLists; track groceryList.id) {
-  <li class="tile" (click)="selectList(groceryList.id)" @tileFadeSlideOut>
+  @for (groceryList of groceryLists$ | async; track groceryList.id) {
+  <li class="tile" (click)="selectList(groceryList)" @tileFadeSlideOut>
     @if(groceryList.showDelete) {
     <div class="delete-tile" @deleteFadeSlideInOut>
       <div class="delete" (click)="deleteList($event, groceryList.id)">
@@ -48,7 +47,7 @@
           height="40"
         />
       </div>
-      <div class="cancel" (click)="cancelDeleteList($event, groceryList.id)">
+      <div class="cancel" (click)="cancelDeleteList($event, groceryList)">
         <img
           src="../../../assets/icons/icons8-cancel-96.png"
           alt="cancel-icon"
@@ -61,8 +60,10 @@
     <div class="title">
       @if (groceryList.store) {
       <label>{{ groceryList.store.name }}</label>
-      <label>{{ displayCreatedAt(groceryList.createdAt) }}</label>
+      } @else {
+      <div></div>
       }
+      <label>{{ displayCreatedAt(groceryList.createdAt) }}</label>
     </div>
     <div class="content">
       <div class="begin">
@@ -96,7 +97,7 @@
         </app-button>
         <app-button
           [danger]="true"
-          (click)="showDeleteList($event, groceryList.id)"
+          (click)="showDeleteList($event, groceryList)"
           ><img
             src="../../../assets/icons/icons8-delete-24.png"
             alt="delete-icon"
@@ -106,8 +107,7 @@
       </div>
     </div>
   </li>
+  } @empty {
+  <p>No grocery list yet</p>
   }
 </ul>
-} @else {
-<p>No grocery list yet</p>
-}

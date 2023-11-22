@@ -9,7 +9,7 @@
         width="20"
       />
     </app-button>
-    <app-button (click)="editIngredient()">
+    <app-button (click)="editGroceryList()">
       <img
         src="../../../assets/icons/icons8-edit-24.png"
         alt="edit-icon"
@@ -55,7 +55,7 @@
 @if(!error) {
 <ul>
   <ng-template #dynamicComponentContainer></ng-template>
-  @for(ingredient of ingredients; track ingredient.id) {
+  @for(ingredient of ingredients$ | async; track ingredient.id) {
   <li (click)="putInBasket($index)" @tileFadeSlideOut>
     <app-tile-ingredient
       [ingredient]="ingredient"
@@ -87,7 +87,7 @@
         <label for="store">Store</label>
         <select name="store" id="store" formControlName="storeId">
           <option value="" selected>No store</option>
-          @for (store of storeService.storeUpdated$ | async; track $index) {
+          @for (store of stores$ | async; track $index) {
           <option [value]="store.id">{{ store.name }}</option>
           }
         </select>

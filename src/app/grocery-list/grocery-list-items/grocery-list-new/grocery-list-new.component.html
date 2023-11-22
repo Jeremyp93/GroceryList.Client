@@ -31,7 +31,7 @@
         (change)="onChangeStore($event)"
       >
         <option value="" selected>No store</option>
-        @for (store of storeService.storeUpdated$ | async; track $index) {
+        @for (store of stores$ | async; track $index) {
         <option [value]="store.id">{{ store.name }}</option>
         }
       </select>

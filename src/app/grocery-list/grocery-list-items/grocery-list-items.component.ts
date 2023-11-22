@@ -1,15 +1,18 @@
-import { Component, OnDestroy, OnInit, Renderer2, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { style, transition, trigger, animate } from '@angular/animations';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { GroceryList, GroceryListService } from '../grocery-list.service';
 import { AnchorButtonComponent } from '../../shared/anchor-button/anchor-button.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { ModalComponent } from '../../shared/modal/modal.component';
+import { GroceryList } from '../types/grocery-list.type';
+import { Select, Store } from '@ngxs/store';
+import { GroceryListState } from '../ngxs-store/grocery-list.state';
+import { AddGroceryList, DeleteGroceryList, GetGroceryLists, SetSelectedGroceryList } from '../ngxs-store/grocery-list.actions';
 
 @Component({
   selector: 'app-grocery-list-items',
@@ -34,22 +37,20 @@ import { ModalComponent } from '../../shared/modal/modal.component';
     ])
   ],
 })
-export class GroceryListItemsComponent implements OnInit, OnDestroy {
-  groceryListService = inject(GroceryListService);
+export class GroceryListItemsComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
-  groceryLists: GroceryList[] = [];
+  ngStore = inject(Store);
+  @Select(GroceryListState.getGroceryLists) groceryLists$!: Observable<GroceryList[]>;
+  @Select(GroceryListState.getSelectedGroceryList) selectedGroceryList$!: Observable<GroceryList | null>;
   modalOpen: boolean = false;
   duplicateForm!: FormGroup;
   duplicateFormSubmitted = false;
   isLoading: boolean = false;
-  private selectedList: GroceryList | null = null;
-  private sub!: Subscription;
 
   ngOnInit(): void {
-    this.groceryListService.getAllGroceryLists();
-    this.sub = this.groceryListService.groceryListUpdated$.subscribe(lists => this.groceryLists = this.sortByDate(lists));
-    this.initForm();
+    this.ngStore.dispatch(new GetGroceryLists());
+    this.#initForm();
   }
 
   getLinkMapsStore = (list: GroceryList): string | undefined => {
@@ -73,8 +74,8 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
     return date.toLocaleDateString();
   }
 
-  selectList = (id: string) => {
-    this.router.navigate(['grocery-lists', id]);
+  selectList = (list: GroceryList) => {
+    this.ngStore.dispatch(new SetSelectedGroceryList(list)).subscribe(_ => this.router.navigate(['grocery-lists', list.id]));
   }
 
   newList = () => {
@@ -86,26 +87,25 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
     this.router.navigate(['grocery-lists', id, 'edit']);
   }
 
-  showDeleteList = (event: Event, id: string) => {
+  showDeleteList = (event: Event, list: GroceryList) => {
     this.preventPropagation(event);
-    const groceryList = this.groceryLists.find(g => g.id === id);
-    groceryList!.showDelete = true;
+    list.showDelete = true;
   }
 
   deleteList = (event: Event, id: string) => {
     this.preventPropagation(event);
-    this.groceryListService.deleteGroceryList(id);
+    this.ngStore.dispatch(new DeleteGroceryList(id));
   }
 
-  cancelDeleteList = (event: Event, id: string) => {
+  cancelDeleteList = (event: Event, list: GroceryList) => {
     this.preventPropagation(event);
-    const groceryList = this.groceryLists.find(g => g.id === id);
-    groceryList!.showDelete = false;
+    list.showDelete = false;
   }
 
   openModal = (event: Event, list: GroceryList): void => {
     this.preventPropagation(event);
-    this.selectedList = list;
+    console.log(list);
+    this.ngStore.dispatch(new SetSelectedGroceryList(list));
     this.modalOpen = true;
   }
 
@@ -116,25 +116,20 @@ export class GroceryListItemsComponent implements OnInit, OnDestroy {
   onSubmitDuplicateForm = async () => {
     this.duplicateFormSubmitted = true;
     if (this.duplicateForm.invalid) return;
-    if (!this.selectedList) return;
-    this.isLoading = true;
-    const name = this.duplicateForm.get('name')?.value;
-    const list = { ...this.selectedList, name: name };
-    await this.groceryListService.addGroceryList(list);
-    this.duplicateForm.reset();
-    this.selectedList = null;
-    this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
+    this.selectedGroceryList$.subscribe(selectedList => {
+      if (!selectedList) return;
+      this.isLoading = true;
+      const name = this.duplicateForm.get('name')?.value;
+      const list = { ...selectedList, name: name };
+      this.ngStore.dispatch(new AddGroceryList(list)).subscribe(_ => {
+        this.duplicateForm.reset();
+        this.ngStore.dispatch(new SetSelectedGroceryList(null));
+        this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
+      });
+    });
   }
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
-
-  private sortByDate = (list: GroceryList[]): GroceryList[] => {
-    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  private initForm = () => {
+  #initForm = () => {
     this.duplicateForm = new FormGroup({
       name: new FormControl('', Validators.required),
     });
