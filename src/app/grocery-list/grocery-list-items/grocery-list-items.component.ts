@@ -1,9 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { style, transition, trigger, animate } from '@angular/animations';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LetDirective } from '@ngrx/component';
 
 import { AnchorButtonComponent } from '../../shared/anchor-button/anchor-button.component';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -14,11 +15,12 @@ import { Select, Store } from '@ngxs/store';
 import { GroceryListState } from '../ngxs-store/grocery-list.state';
 import { AddGroceryList, DeleteGroceryList, GetGroceryLists, SetSelectedGroceryList } from '../ngxs-store/grocery-list.actions';
 import { ButtonStyle } from '../../shared/button/button-style.enum';
+import { AlertComponent } from '../../shared/alert/alert.component';
 
 @Component({
   selector: 'app-grocery-list-items',
   standalone: true,
-  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent, ModalComponent, ReactiveFormsModule],
+  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent, ModalComponent, ReactiveFormsModule, AlertComponent, LetDirective],
   templateUrl: './grocery-list-items.component.html',
   styleUrl: './grocery-list-items.component.scss',
   animations: [
@@ -43,12 +45,13 @@ export class GroceryListItemsComponent implements OnInit {
   route = inject(ActivatedRoute);
   ngStore = inject(Store);
   @Select(GroceryListState.getGroceryLists) groceryLists$!: Observable<GroceryList[]>;
-  @Select(GroceryListState.getSelectedGroceryList) selectedGroceryList$!: Observable<GroceryList | null>;
   modalOpen: boolean = false;
   duplicateForm!: FormGroup;
   duplicateFormSubmitted = false;
   isLoading: boolean = false;
   #selectedList: GroceryList | null = null;
+  modalError: boolean = false;
+  error: boolean = false;
 
   get buttonStyles(): typeof ButtonStyle {
     return ButtonStyle;
@@ -119,16 +122,23 @@ export class GroceryListItemsComponent implements OnInit {
   }
 
   onSubmitDuplicateForm = async () => {
+    this.modalError = false;
     this.duplicateFormSubmitted = true;
     if (this.duplicateForm.invalid) return;
     if (!this.#selectedList) return;
     this.isLoading = true;
     const name = this.duplicateForm.get('name')?.value;
     const list = { ...this.#selectedList, name: name };
-    this.ngStore.dispatch(new AddGroceryList(list)).subscribe(_ => {
-      this.duplicateForm.reset();
-      this.ngStore.dispatch(new SetSelectedGroceryList(null));
-      this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
+    this.ngStore.dispatch(new AddGroceryList(list)).subscribe({
+      next: () => {
+        this.duplicateForm.reset();
+        this.ngStore.dispatch(new SetSelectedGroceryList(null));
+        this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
+      },
+      error: () => {
+        this.duplicateFormSubmitted = this.isLoading = false;
+        this.modalError = true;
+      }
     });
   }
 

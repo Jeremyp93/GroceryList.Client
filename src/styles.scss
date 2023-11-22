@@ -22,6 +22,7 @@ input[type="number"] {
     &:focus {
         //background-color: rgb(255, 255, 255, 0.8);
         border: 1px solid #C8963E;
+        border-radius: 5px;
         //padding: 5px;
     }
 }
@@ -41,6 +42,7 @@ select {
     &:focus {
         outline: none;
         border: 1px solid #C8963E;
+        border-radius: 5px;
         //background-color: #fff;
         //border-bottom: unset;
     }

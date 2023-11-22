@@ -1,0 +1,12 @@
+@if(visible) {
+<div class="alert">
+  <div class="message">
+    <h3>Errors:</h3>
+    <ul>
+      @for (alert of messages(); track $index) {
+      <li>{{ alert.message }}</li>
+      }
+    </ul>
+  </div>
+</div>
+}

@@ -1,6 +1,9 @@
-<app-modal [isOpen]="modalOpen" (closeModalEvent)="modalOpen = false"
+<app-modal
+  [isOpen]="modalOpen"
+  (closeModalEvent)="modalOpen = false; modalError = false"
   ><div>
     <h4>Create a copy</h4>
+    <app-alert [visible]="modalError"></app-alert>
     <form
       class="form-modal"
       [formGroup]="duplicateForm"
@@ -35,79 +38,81 @@
   </div>
 </div>
 <ul>
-  @for (groceryList of groceryLists$ | async; track groceryList.id) {
-  <li class="tile" (click)="selectList(groceryList)" @tileFadeSlideOut>
-    @if(groceryList.showDelete) {
-    <div class="delete-tile" @deleteFadeSlideInOut>
-      <div class="delete" (click)="deleteList($event, groceryList.id)">
-        <img
-          src="../../../assets/icons/icons8-delete-96.png"
-          alt="delete-icon"
-          width="40"
-          height="40"
-        />
-      </div>
-      <div class="cancel" (click)="cancelDeleteList($event, groceryList)">
-        <img
-          src="../../../assets/icons/icons8-cancel-96.png"
-          alt="cancel-icon"
-          width="30"
-          height="30"
-        />
-      </div>
-    </div>
-    }
-    <div class="title">
-      @if (groceryList.store) {
-      <label>{{ groceryList.store.name }}</label>
-      } @else {
-      <div></div>
-      }
-      <label>{{ displayCreatedAt(groceryList.createdAt) }}</label>
-    </div>
-    <div class="content">
-      <div class="begin">
-        {{ groceryList.name }}
-      </div>
-      <div class="buttons">
-        @if(groceryList.store) {
-        <app-anchor-button
-          [href]="getLinkMapsStore(groceryList) || '#'"
-          [newWindow]="true"
-          (click)="preventPropagation($event)"
-          ><img
-            src="../../../assets/icons/icons8-location-24.png"
-            alt="location-icon"
-            width="20"
-        /></app-anchor-button>
-        }
-        <app-button (click)="editList($event, groceryList.id)"
-          ><img
-            src="../../../assets/icons/icons8-edit-24.png"
-            alt="edit-icon"
-            width="20"
-          />
-        </app-button>
-        <app-button (click)="openModal($event, groceryList)"
-          ><img
-            src="../../../assets/icons/icons8-duplicate-24.png"
-            alt="duplicate-icon"
-            width="20"
-          />
-        </app-button>
-        <app-button
-          [buttonStyle]="buttonStyles.danger"
-          (click)="showDeleteList($event, groceryList)"
-          ><img
-            src="../../../assets/icons/icons8-delete-24.png"
+  <ng-container *ngrxLet="groceryLists$ as groceryLists">
+    @for (groceryList of groceryLists; track groceryList.id) {
+    <li class="tile" (click)="selectList(groceryList)" @tileFadeSlideOut>
+      @if(groceryList.showDelete) {
+      <div class="delete-tile" @deleteFadeSlideInOut>
+        <div class="delete" (click)="deleteList($event, groceryList.id)">
+          <img
+            src="../../../assets/icons/icons8-delete-96.png"
             alt="delete-icon"
-            width="20"
+            width="40"
+            height="40"
           />
-        </app-button>
+        </div>
+        <div class="cancel" (click)="cancelDeleteList($event, groceryList)">
+          <img
+            src="../../../assets/icons/icons8-cancel-96.png"
+            alt="cancel-icon"
+            width="30"
+            height="30"
+          />
+        </div>
       </div>
-    </div>
-  </li>
-  } @empty {
-  <p>No grocery list yet</p>
-  }
+      }
+      <div class="title">
+        @if (groceryList.store) {
+        <label>{{ groceryList.store.name }}</label>
+        } @else {
+        <div></div>
+        }
+        <label>{{ displayCreatedAt(groceryList.createdAt) }}</label>
+      </div>
+      <div class="content">
+        <div class="begin">
+          {{ groceryList.name }}
+        </div>
+        <div class="buttons">
+          @if(groceryList.store) {
+          <app-anchor-button
+            [href]="getLinkMapsStore(groceryList) || '#'"
+            [newWindow]="true"
+            (click)="preventPropagation($event)"
+            ><img
+              src="../../../assets/icons/icons8-location-24.png"
+              alt="location-icon"
+              width="20"
+          /></app-anchor-button>
+          }
+          <app-button (click)="editList($event, groceryList.id)"
+            ><img
+              src="../../../assets/icons/icons8-edit-24.png"
+              alt="edit-icon"
+              width="20"
+            />
+          </app-button>
+          <app-button (click)="openModal($event, groceryList)"
+            ><img
+              src="../../../assets/icons/icons8-duplicate-24.png"
+              alt="duplicate-icon"
+              width="20"
+            />
+          </app-button>
+          <app-button
+            [buttonStyle]="buttonStyles.danger"
+            (click)="showDeleteList($event, groceryList)"
+            ><img
+              src="../../../assets/icons/icons8-delete-24.png"
+              alt="delete-icon"
+              width="20"
+            />
+          </app-button>
+        </div>
+      </div>
+    </li>
+    } @empty {
+    <p>No grocery list yet</p>
+    }
+  </ng-container>
 </ul>

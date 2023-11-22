@@ -1,0 +1,16 @@
+.alert {
+    background-color: hsl(4, 79%, 63%, 50%);
+    margin-bottom: 15px;
+    border-radius: 5px;
+    padding: 10px;
+
+    .message {
+        color: #595959;
+        text-align: initial;
+        font-size: small;
+
+        h3 {
+            margin-bottom: 0;
+        }
+    }
+}
