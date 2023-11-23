@@ -16,7 +16,7 @@ export class GroceryListService {
     storeService = inject(StoreService);
 
     getAllGroceryLists = (): Observable<GroceryList[]> => {
-        return this.httpClient.get<GroceryListResponseDto[]>('http://localhost:5058/api/grocerylist')
+        return this.httpClient.get<GroceryListResponseDto[]>('http://localhost:5058/api/grocerylists')
             .pipe(
                 map((listsDto: GroceryListResponseDto[]) => {
                     // Map DTOs to application type
