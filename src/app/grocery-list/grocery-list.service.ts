@@ -8,17 +8,15 @@ import { GroceryListRequestDto, GroceryListResponseDto } from "./dtos/grocery-li
 import { GroceryList } from "./types/grocery-list.type";
 import { IngredientDto } from "./dtos/ingredient-dto.type";
 import { Ingredient } from "./types/ingredient.type";
-import { AlertService } from "../shared/alert/alert.service";
 import { AlertType } from "../shared/alert/alert.enum";
 
 @Injectable({ providedIn: 'root' })
 export class GroceryListService {
     httpClient = inject(HttpClient);
     storeService = inject(StoreService);
-    alertService = inject(AlertService);
 
     getAllGroceryLists = (): Observable<GroceryList[]> => {
-        return this.httpClient.get<GroceryListResponseDto[]>('http://localhost:5058/api/grocerylists')
+        return this.httpClient.get<GroceryListResponseDto[]>('http://localhost:5058/api/grocerylist')
             .pipe(
                 map((listsDto: GroceryListResponseDto[]) => {
                     // Map DTOs to application type
@@ -81,16 +79,11 @@ export class GroceryListService {
     }
 
     #handleError = (errorResponse: HttpErrorResponse) => {
-        this.alertService.clearMessages();
-        console.log(errorResponse);
         let errorMessage = 'An unknown error occured.';
-        if (!errorResponse.error) {
-            this.alertService.sendMessage(AlertType.Error, errorMessage);
+        if (!Array.isArray(errorResponse.error)) {
             return throwError(() => new Error(errorMessage));
         }
-        errorResponse.error.forEach((error: string) => {
-            this.alertService.sendMessage(AlertType.Error, error);
-        });
+
         errorMessage = errorResponse.error[0];
         return throwError(() => new Error(errorMessage));
     }

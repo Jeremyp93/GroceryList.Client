@@ -52,13 +52,14 @@ export class GroceryListItemsComponent implements OnInit {
   #selectedList: GroceryList | null = null;
   modalError: boolean = false;
   error: boolean = false;
+  errorMessage: string | null = null;
 
   get buttonStyles(): typeof ButtonStyle {
     return ButtonStyle;
   }
 
   ngOnInit(): void {
-    this.ngStore.dispatch(new GetGroceryLists());
+    this.ngStore.dispatch(new GetGroceryLists()).subscribe({ error: (err: Error) => { this.error = true; this.errorMessage = err.message; } });
     this.#initForm();
   }
 

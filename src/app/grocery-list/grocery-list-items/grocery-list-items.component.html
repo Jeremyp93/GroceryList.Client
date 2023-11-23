@@ -37,6 +37,7 @@
     </app-button>
   </div>
 </div>
+<app-alert [visible]="error" [message]="errorMessage!"></app-alert>
 <ul>
   <ng-container *ngrxLet="groceryLists$ as groceryLists">
     @for (groceryList of groceryLists; track groceryList.id) {

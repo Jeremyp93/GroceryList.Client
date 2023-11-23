@@ -7,6 +7,7 @@ import { GroceryListService } from '../grocery-list.service';
 import { AddGroceryList, DeleteGroceryList, GetGroceryLists, SetSelectedGroceryList, UpdateGroceryList } from './grocery-list.actions';
 import { Ingredient } from '../types/ingredient.type';
 import { SetIngredients, SetSections } from './ingredient.actions';
+import { throwError } from 'rxjs';
 
 export interface GroceryListStateModel {
     groceryLists: GroceryList[];
@@ -37,13 +38,17 @@ export class GroceryListState {
 
     @Action(GetGroceryLists)
     getGroceryLists({ getState, setState }: StateContext<GroceryListStateModel>) {
-        return this.groceryListService.getAllGroceryLists().pipe(tap((result) => {
-            const state = getState();
-            setState({
-                ...state,
-                groceryLists: result,
-            });
-        }));
+        return this.groceryListService.getAllGroceryLists().pipe(
+            catchError(error => {
+                return throwError(() => new Error(`Gorcery Lists could not been retrieved. (${error})`));
+            }),
+            tap((result) => {
+                const state = getState();
+                setState({
+                    ...state,
+                    groceryLists: result,
+                });
+            }));
     }
 
     @Action(AddGroceryList)
@@ -54,12 +59,16 @@ export class GroceryListState {
         } else {
             list = { id: '', name: payload.name, storeId: payload.store?.id ?? '', ingredients: payload.ingredients };
         }
-        return this.groceryListService.addGroceryList(list).pipe(tap((result) => {
-            const state = getState();
-            patchState({
-                groceryLists: [...state.groceryLists, result]
-            });
-        }));
+        return this.groceryListService.addGroceryList(list).pipe(
+            catchError(error => {
+                return throwError(() => new Error(`Gorcery List could not been added. (${error})`));
+            }),
+            tap((result) => {
+                const state = getState();
+                patchState({
+                    groceryLists: [...state.groceryLists, result]
+                });
+            }));
     }
 
     @Action(UpdateGroceryList)
@@ -70,29 +79,37 @@ export class GroceryListState {
         } else {
             list = { id: id, name: payload.name, storeId: payload.store?.id ?? '', ingredients: payload.ingredients };
         }
-        return this.groceryListService.updateGroceryList(id, list).pipe(tap((result) => {
-            const state = getState();
-            const groceryLists = [...state.groceryLists];
-            const updatedGroceryListIndex = groceryLists.findIndex(item => item.id === id);
-            groceryLists[updatedGroceryListIndex] = result;
-            setState({
-                ...state,
-                groceryLists: groceryLists,
-            });
-        }));
+        return this.groceryListService.updateGroceryList(id, list).pipe(
+            catchError(error => {
+                return throwError(() => new Error(`Gorcery List could not been updated. (${error})`));
+            }),
+            tap((result) => {
+                const state = getState();
+                const groceryLists = [...state.groceryLists];
+                const updatedGroceryListIndex = groceryLists.findIndex(item => item.id === id);
+                groceryLists[updatedGroceryListIndex] = result;
+                setState({
+                    ...state,
+                    groceryLists: groceryLists,
+                });
+            }));
     }
 
 
     @Action(DeleteGroceryList)
     deleteGroceryList({ getState, setState }: StateContext<GroceryListStateModel>, { id }: DeleteGroceryList) {
-        return this.groceryListService.deleteGroceryList(id).pipe(tap(() => {
-            const state = getState();
-            const filteredArray = state.groceryLists.filter(item => item.id !== id);
-            setState({
-                ...state,
-                groceryLists: filteredArray,
-            });
-        }));
+        return this.groceryListService.deleteGroceryList(id).pipe(
+            catchError(error => {
+                return throwError(() => new Error(`Gorcery List could not been deleted. (${error})`));
+            }),
+            tap(() => {
+                const state = getState();
+                const filteredArray = state.groceryLists.filter(item => item.id !== id);
+                setState({
+                    ...state,
+                    groceryLists: filteredArray,
+                });
+            }));
     }
 
     @Action(SetSelectedGroceryList)
