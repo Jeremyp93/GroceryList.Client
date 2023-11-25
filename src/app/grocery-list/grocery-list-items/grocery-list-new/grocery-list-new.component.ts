@@ -14,6 +14,7 @@ import { Ingredient } from '../../types/ingredient.type';
 import { Store } from '../../../store/types/store.type';
 import { AddGroceryList, UpdateGroceryList } from '../../ngxs-store/grocery-list.actions';
 import { ButtonStyle } from '../../../shared/button/button-style.enum';
+import { ROUTES_PARAM, GROCERY_LIST_FORM, INGREDIENT_FORM } from '../../../constants';
 
 @Component({
   selector: 'app-grocery-list-new',
@@ -38,7 +39,7 @@ export class GroceryListNewComponent implements OnInit {
   @ViewChildren('inputFields') inputFields!: QueryList<ElementRef>;
 
   get ingredientControls() { // a getter!
-    return (this.groceryListForm.get('ingredients') as FormArray).controls;
+    return (this.groceryListForm.get(GROCERY_LIST_FORM.INGREDIENTS) as FormArray).controls;
   }
 
   get buttonStyles(): typeof ButtonStyle {
@@ -47,7 +48,7 @@ export class GroceryListNewComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params: Params) => {
-      this.idToEdit = params['id'];
+      this.idToEdit = params[ROUTES_PARAM.ID_PARAMETER];
       if (this.idToEdit) {
         this.editMode = true;
       }
@@ -57,12 +58,12 @@ export class GroceryListNewComponent implements OnInit {
   }
 
   onAddIngredient = () => {
-    const ingredients = this.groceryListForm.get('ingredients') as FormArray;
+    const ingredients = this.groceryListForm.get(GROCERY_LIST_FORM.INGREDIENTS) as FormArray;
     ingredients.insert(0, new FormGroup({
-      'id': new FormControl(UUID()),
-      'name': new FormControl(null, Validators.required),
-      'amount': new FormControl("1", [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
-      'category': new FormControl("")
+      [INGREDIENT_FORM.ID]: new FormControl(UUID()),
+      [INGREDIENT_FORM.NAME]: new FormControl(null, Validators.required),
+      [INGREDIENT_FORM.AMOUNT]: new FormControl("1", [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
+      [INGREDIENT_FORM.CATEGORY]: new FormControl("")
     }));
     setTimeout(() => {
       this.#focusOnControl(0);
@@ -70,8 +71,8 @@ export class GroceryListNewComponent implements OnInit {
   }
 
   onDeleteIngredient = (id: string) => {
-    const ingredients = this.groceryListForm.get('ingredients') as FormArray;
-    const index = ingredients.controls.findIndex(c => c.get('id')?.value === id);
+    const ingredients = this.groceryListForm.get(GROCERY_LIST_FORM.INGREDIENTS) as FormArray;
+    const index = ingredients.controls.findIndex(c => c.get(INGREDIENT_FORM.ID)?.value === id);
     ingredients.removeAt(index);
   }
 

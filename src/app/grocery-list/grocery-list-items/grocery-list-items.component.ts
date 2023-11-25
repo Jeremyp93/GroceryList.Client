@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { style, transition, trigger, animate } from '@angular/animations';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LetDirective } from '@ngrx/component';
@@ -16,6 +16,7 @@ import { GroceryListState } from '../ngxs-store/grocery-list.state';
 import { AddGroceryList, DeleteGroceryList, GetGroceryLists, SetSelectedGroceryList } from '../ngxs-store/grocery-list.actions';
 import { ButtonStyle } from '../../shared/button/button-style.enum';
 import { AlertComponent } from '../../shared/alert/alert.component';
+import { GROCERY_LIST_FORM, ROUTES_PARAM, GOOGLE_MAPS_QUERY, GEO_MOBILE_QUERY } from '../../constants';
 
 @Component({
   selector: 'app-grocery-list-items',
@@ -68,9 +69,9 @@ export class GroceryListItemsComponent implements OnInit {
 
     if (/Mobi|Android/i.test(navigator.userAgent)) {
       // Open the map with the specified address
-      return `geo:0,0?q=${list.store.street}, ${list.store.city} ${list.store.zipCode}, ${list.store.country}`;
+      return `${GEO_MOBILE_QUERY}${list.store.street}, ${list.store.city} ${list.store.zipCode}, ${list.store.country}`;
     } else {
-      return `https://www.google.com/maps?q=${list.store.street}, ${list.store.city} ${list.store.zipCode}, ${list.store.country}`;
+      return `${GOOGLE_MAPS_QUERY}${list.store.street}, ${list.store.city} ${list.store.zipCode}, ${list.store.country}`;
     }
   }
 
@@ -85,16 +86,16 @@ export class GroceryListItemsComponent implements OnInit {
   }
 
   selectList = (list: GroceryList) => {
-    this.ngStore.dispatch(new SetSelectedGroceryList(list)).subscribe(_ => this.router.navigate(['grocery-lists', list.id]));
+    this.ngStore.dispatch(new SetSelectedGroceryList(list)).subscribe(_ => this.router.navigate([ROUTES_PARAM.GROCERY_LIST, list.id]));
   }
 
   newList = () => {
-    this.router.navigate(['grocery-lists', 'new']);
+    this.router.navigate([ROUTES_PARAM.GROCERY_LIST, ROUTES_PARAM.NEW]);
   }
 
   editList = (event: Event, id: string) => {
     this.preventPropagation(event);
-    this.router.navigate(['grocery-lists', id, 'edit']);
+    this.router.navigate([ROUTES_PARAM.GROCERY_LIST, id, ROUTES_PARAM.EDIT]);
   }
 
   showDeleteList = (event: Event, list: GroceryList) => {
@@ -123,12 +124,13 @@ export class GroceryListItemsComponent implements OnInit {
   }
 
   onSubmitDuplicateForm = async () => {
+    this.errorMessage = null;
     this.modalError = false;
     this.duplicateFormSubmitted = true;
     if (this.duplicateForm.invalid) return;
     if (!this.#selectedList) return;
     this.isLoading = true;
-    const name = this.duplicateForm.get('name')?.value;
+    const name = this.duplicateForm.get(GROCERY_LIST_FORM.NAME)?.value;
     const list = { ...this.#selectedList, name: name };
     this.ngStore.dispatch(new AddGroceryList(list)).subscribe({
       next: () => {
@@ -136,8 +138,9 @@ export class GroceryListItemsComponent implements OnInit {
         this.ngStore.dispatch(new SetSelectedGroceryList(null));
         this.duplicateFormSubmitted = this.isLoading = this.modalOpen = false;
       },
-      error: () => {
+      error: (error: Error) => {
         this.duplicateFormSubmitted = this.isLoading = false;
+        this.errorMessage = error.message;
         this.modalError = true;
       }
     });
@@ -145,7 +148,7 @@ export class GroceryListItemsComponent implements OnInit {
 
   #initForm = () => {
     this.duplicateForm = new FormGroup({
-      name: new FormControl('', Validators.required),
+      [GROCERY_LIST_FORM.NAME]: new FormControl('', Validators.required),
     });
   }
 }

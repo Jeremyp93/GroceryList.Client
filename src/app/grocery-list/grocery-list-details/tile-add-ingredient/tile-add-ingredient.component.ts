@@ -1,10 +1,12 @@
 import { Component, HostListener, OnInit, Output, EventEmitter, inject, ElementRef, Input, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { v4 as UUID } from 'uuid';
 
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { Ingredient } from '../../types/ingredient.type';
 import { Section } from '../../../store/types/section.type';
+import { INGREDIENT_FORM } from '../../../constants';
 
 @Component({
   selector: 'app-tile-add-ingredient',
@@ -53,9 +55,10 @@ export class TileAddIngredientComponent implements OnInit, AfterViewInit {
 
   #initForm = () => {
     this.addForm = new FormGroup({
-      amount: new FormControl(1, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
-      name: new FormControl('', Validators.required),
-      category: new FormControl(''),
+      [INGREDIENT_FORM.ID]: new FormControl(UUID()),
+      [INGREDIENT_FORM.AMOUNT]: new FormControl(1, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
+      [INGREDIENT_FORM.NAME]: new FormControl('', Validators.required),
+      [INGREDIENT_FORM.CATEGORY]: new FormControl(''),
     });
   }
 }

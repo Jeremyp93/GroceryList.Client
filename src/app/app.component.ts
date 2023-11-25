@@ -1,6 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ROUTES_PARAM } from './constants';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import { RouterModule } from '@angular/router';
 export class AppComponent {
   isKeyboardOpen = false;
   previousHeight: number = 0;
+  groceryListRoute: string = '/' + ROUTES_PARAM.GROCERY_LIST;
+  storeRoute: string = '/' + ROUTES_PARAM.STORE;
 
   @HostListener('window:resize')
   onResize() {

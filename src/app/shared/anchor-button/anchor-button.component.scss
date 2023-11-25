@@ -16,8 +16,4 @@ a {
 /* Hover effect */
 a:hover {
     background-color: #595959;
-
-    &* {
-        filter: invert(100%);
-    }
 }

@@ -23,6 +23,7 @@ import { AddGroceryList, SetSelectedGroceryList } from '../ngxs-store/grocery-li
 import { GroceryListState } from '../ngxs-store/grocery-list.state';
 import { GroceryList } from '../types/grocery-list.type';
 import { ButtonStyle } from '../../shared/button/button-style.enum';
+import { ROUTES_PARAM, GROCERY_LIST_FORM } from '../../constants';
 
 @Component({
   selector: 'app-grocery-list-details',
@@ -69,7 +70,7 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params: Params) => {
-      this.id = params['id'];
+      this.id = params[ROUTES_PARAM.ID_PARAMETER];
       const groceryList = await lastValueFrom(this.groceryListService.getGroceryList(this.id));
       this.selectedGrocery$.pipe(take(1)).subscribe(list => {
         if (!list) {
@@ -94,7 +95,7 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
     this.ngStore.dispatch(new ResetIngredients());
   }
 
-  newIngredient = async () => {
+  newIngredient = () => {
     const componentRef = this.dynamicComponentContainer.createComponent(TileAddIngredientComponent);
     this.sections$.pipe(take(1)).subscribe(sections => {
       componentRef.setInput('sections', sections);
@@ -157,8 +158,8 @@ export class GroceryListDetailsComponent implements OnInit, OnDestroy {
 
   initForm = () => {
     this.exportForm = new FormGroup({
-      name: new FormControl('', Validators.required),
-      storeId: new FormControl(this.storeId ?? '')
+      [GROCERY_LIST_FORM.NAME]: new FormControl('', Validators.required),
+      [GROCERY_LIST_FORM.STORE_ID]: new FormControl(this.storeId ?? '')
     });
   }
 

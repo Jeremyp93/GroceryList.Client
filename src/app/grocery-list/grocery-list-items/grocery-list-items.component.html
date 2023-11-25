@@ -3,7 +3,7 @@
   (closeModalEvent)="modalOpen = false; modalError = false"
   ><div>
     <h4>Create a copy</h4>
-    <app-alert [visible]="modalError"></app-alert>
+    <app-alert [visible]="modalError" [message]="errorMessage!"></app-alert>
     <form
       class="form-modal"
       [formGroup]="duplicateForm"

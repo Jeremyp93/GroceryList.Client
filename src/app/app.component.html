@@ -4,7 +4,7 @@
 <div class="bottom-menu" [class.keyboard-open]="isKeyboardOpen">
   <ul>
     <li routerLinkActive="active">
-      <a routerLink="/grocery-lists"
+      <a [routerLink]="groceryListRoute"
         ><img
           src="../assets/icons/icons8-list-24.png"
           alt="list-icon"
@@ -13,7 +13,7 @@
       >
     </li>
     <li routerLinkActive="active">
-      <a routerLink="/stores">
+      <a [routerLink]="storeRoute">
         <img
           src="../assets/icons/icons8-store-24.png"
           alt="store-icon"

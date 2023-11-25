@@ -1,0 +1,15 @@
+services:
+  grocery-list-app:
+    container_name: grocery-list-app-container
+    build: .
+    image: grocery-list-app:v1
+    ports:
+      - 8095:80
+    # expose:
+    #   - 8095
+    # networks:
+    #   - internalnet
+
+# networks:
+#   internalnet:
+#     driver: bridge

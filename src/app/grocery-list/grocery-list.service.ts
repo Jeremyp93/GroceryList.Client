@@ -8,7 +8,7 @@ import { GroceryListRequestDto, GroceryListResponseDto } from "./dtos/grocery-li
 import { GroceryList } from "./types/grocery-list.type";
 import { IngredientDto } from "./dtos/ingredient-dto.type";
 import { Ingredient } from "./types/ingredient.type";
-import { AlertType } from "../shared/alert/alert.enum";
+import { environment } from "../../../src/environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class GroceryListService {
@@ -16,7 +16,7 @@ export class GroceryListService {
     storeService = inject(StoreService);
 
     getAllGroceryLists = (): Observable<GroceryList[]> => {
-        return this.httpClient.get<GroceryListResponseDto[]>('http://localhost:5058/api/grocerylists')
+        return this.httpClient.get<GroceryListResponseDto[]>(environment.groceryListApiUrl)
             .pipe(
                 map((listsDto: GroceryListResponseDto[]) => {
                     // Map DTOs to application type
@@ -27,7 +27,7 @@ export class GroceryListService {
     }
 
     getGroceryList = (id: string): Observable<GroceryList> => {
-        return this.httpClient.get<GroceryListResponseDto>(`http://localhost:5058/api/grocerylists/${id}`).pipe(map((dto: GroceryListResponseDto) => {
+        return this.httpClient.get<GroceryListResponseDto>(`${environment.groceryListApiUrl}/${id}`).pipe(map((dto: GroceryListResponseDto) => {
             return this.#fromDto(dto);
         }), catchError(this.#handleError));
     }
@@ -36,23 +36,23 @@ export class GroceryListService {
         if (!list.storeId) {
             list.storeId = NIL_UUID;
         }
-        return this.httpClient.post<GroceryListResponseDto>('http://localhost:5058/api/grocerylists', list).pipe(map((createdListDto: GroceryListResponseDto) => {
+        return this.httpClient.post<GroceryListResponseDto>(environment.groceryListApiUrl, list).pipe(map((createdListDto: GroceryListResponseDto) => {
             return this.#fromDto(createdListDto);
         }), catchError(this.#handleError));
     }
 
     deleteGroceryList = (id: string): Observable<void> => {
-        return this.httpClient.delete<void>(`http://localhost:5058/api/grocerylists/${id}`).pipe(catchError(this.#handleError));
+        return this.httpClient.delete<void>(`${environment.groceryListApiUrl}/${id}`).pipe(catchError(this.#handleError));
     }
 
     updateGroceryList = (id: string, list: GroceryListRequestDto): Observable<GroceryList> => {
-        return this.httpClient.put<GroceryListResponseDto>(`http://localhost:5058/api/grocerylists/${id}`, list).pipe(map((updatedListDto: GroceryListResponseDto) => {
+        return this.httpClient.put<GroceryListResponseDto>(`${environment.groceryListApiUrl}/${id}`, list).pipe(map((updatedListDto: GroceryListResponseDto) => {
             return this.#fromDto(updatedListDto);
         }), catchError(this.#handleError));
     }
 
     updateIngredients = (id: string, ingredients: Ingredient[]): Observable<Ingredient[]> => {
-        return this.httpClient.put<IngredientDto[]>(`http://localhost:5058/api/grocerylists/${id}/ingredients`, ingredients).pipe(map((ingredientsDto: IngredientDto[]) => {
+        return this.httpClient.put<IngredientDto[]>(`${environment.groceryListApiUrl}/${id}/ingredients`, ingredients).pipe(map((ingredientsDto: IngredientDto[]) => {
             return ingredientsDto.map((dto: IngredientDto) => (this.#fromIngredientDto(dto)));
         }), catchError(this.#handleError));
     }
