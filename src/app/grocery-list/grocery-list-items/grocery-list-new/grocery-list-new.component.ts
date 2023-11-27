@@ -35,6 +35,7 @@ export class GroceryListNewComponent implements OnInit {
   editMode: boolean = false;
   idToEdit: string | null = null;
   submitted: boolean = false;
+  isLoading: boolean = false;
 
   @ViewChildren('inputFields') inputFields!: QueryList<ElementRef>;
 
@@ -77,16 +78,22 @@ export class GroceryListNewComponent implements OnInit {
   }
 
   onSubmit = () => {
-    this.submitted = true;
+    this.submitted = this.isLoading = true;
     if (this.groceryListForm.invalid) return;
     if (this.editMode) {
       if (!this.groceryListForm.pristine) {
-        this.ngStore.dispatch(new UpdateGroceryList(this.groceryListForm.value, this.idToEdit!)).subscribe(_ => this.#back());
+        this.ngStore.dispatch(new UpdateGroceryList(this.groceryListForm.value, this.idToEdit!)).subscribe({
+          next: () => this.#back(),
+          error: () => this.isLoading = false
+        });
       } else {
         this.#back();
       }
     } else {
-      this.ngStore.dispatch(new AddGroceryList(this.groceryListForm.value)).subscribe(_ => this.#back());
+      this.ngStore.dispatch(new AddGroceryList(this.groceryListForm.value)).subscribe({
+        next: () => this.#back(),
+        error: () => this.isLoading = false
+      });
     }
   }
 

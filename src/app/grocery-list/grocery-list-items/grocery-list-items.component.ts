@@ -17,11 +17,14 @@ import { AddGroceryList, DeleteGroceryList, GetGroceryLists, SetSelectedGroceryL
 import { ButtonStyle } from '../../shared/button/button-style.enum';
 import { AlertComponent } from '../../shared/alert/alert.component';
 import { GROCERY_LIST_FORM, ROUTES_PARAM, GOOGLE_MAPS_QUERY, GEO_MOBILE_QUERY } from '../../constants';
+import { LoadingComponent } from '../../shared/loading/loading.component';
+import { LoadingSize } from '../../shared/loading/loading-size.enum';
+import { LoadingColor } from '../../shared/loading/loading-color.enum';
 
 @Component({
   selector: 'app-grocery-list-items',
   standalone: true,
-  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent, ModalComponent, ReactiveFormsModule, AlertComponent, LetDirective],
+  imports: [CommonModule, AnchorButtonComponent, RouterModule, ButtonComponent, HeaderComponent, ModalComponent, ReactiveFormsModule, AlertComponent, LetDirective, LoadingComponent],
   templateUrl: './grocery-list-items.component.html',
   styleUrl: './grocery-list-items.component.scss',
   animations: [
@@ -59,8 +62,20 @@ export class GroceryListItemsComponent implements OnInit {
     return ButtonStyle;
   }
 
+  get loadingSizes(): typeof LoadingSize {
+    return LoadingSize;
+  }
+
+  get loadingColors(): typeof LoadingColor {
+    return LoadingColor;
+  }
+
   ngOnInit(): void {
-    this.ngStore.dispatch(new GetGroceryLists()).subscribe({ error: (err: Error) => { this.error = true; this.errorMessage = err.message; } });
+    this.isLoading = true;
+    this.ngStore.dispatch(new GetGroceryLists()).subscribe({
+      next: () => this.isLoading = false,
+      error: (err: Error) => { this.error = true; this.errorMessage = err.message; this.isLoading = false; }
+    });
     this.#initForm();
   }
 

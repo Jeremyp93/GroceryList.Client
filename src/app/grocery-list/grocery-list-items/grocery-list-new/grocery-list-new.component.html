@@ -2,7 +2,7 @@
 @if (groceryListForm) {
 <form [formGroup]="groceryListForm" (ngSubmit)="onSubmit()" autocomplete="off">
   <div class="submit top">
-    <app-button type="submit" class="button-submit"
+    <app-button type="submit" class="button-submit" [loading]="isLoading"
       ><img
         src="../../../../assets/icons/icons8-check-24.png"
         alt="submit-icon"
@@ -101,7 +101,7 @@
     </div>
   </div>
   <div class="submit bottom">
-    <app-button type="submit"
+    <app-button type="submit" [loading]="isLoading"
       ><img
         src="../../../../assets/icons/icons8-check-24.png"
         alt="submit-icon"

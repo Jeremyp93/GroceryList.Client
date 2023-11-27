@@ -112,8 +112,16 @@
         </div>
       </div>
     </li>
-    } @empty {
+    } @empty { @if(isLoading){
+    <div class="flex-center mt-20">
+      <app-loading
+        [size]="loadingSizes.large"
+        [color]="loadingColors.app"
+      ></app-loading>
+    </div>
+
+    } @else {
     <p>No grocery list yet</p>
-    }
+    } }
   </ng-container>
 </ul>

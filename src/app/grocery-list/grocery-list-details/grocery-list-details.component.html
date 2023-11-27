@@ -20,7 +20,7 @@
       (click)="saveIngredients()"
       [buttonStyle]="saved ? buttonStyles.success : buttonStyles.normal"
       [disabled]="saved"
-      [loading]="isLoading"
+      [loading]="saveProcess"
     >
       @if (saved) {
       <img
@@ -52,7 +52,14 @@
     </app-button>
   </div>
 </div>
-@if(!error) {
+@if (isLoading) {
+<div class="flex-center mt-20">
+  <app-loading
+    [color]="loadingColors.app"
+    [size]="loadingSizes.large"
+  ></app-loading>
+</div>
+} @if(!error) {
 <ul>
   <ng-template #dynamicComponentContainer></ng-template>
   @for(ingredient of ingredients$ | async; track ingredient.id) {
@@ -69,7 +76,7 @@
   }
 </ul>
 } @else {
-<p>This item does not exist.. Please go back and select a correct list</p>
+<p>This list does not exist.. Please go back and select a correct list</p>
 }
 <app-modal [isOpen]="modalOpen" (closeModalEvent)="modalOpen = false"
   ><div class="content-modal">

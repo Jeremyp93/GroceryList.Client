@@ -6,6 +6,16 @@ body {
     &.modal-open {
         overflow: hidden;
     }
+
+    .flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .mt-20 {
+        margin-top: 20px;
+    }
 }
 
 input[type="text"],
